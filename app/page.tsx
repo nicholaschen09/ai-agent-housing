@@ -80,6 +80,12 @@ export default function Component() {
     }
   }, [dropdownOpen])
 
+  useEffect(() => {
+    if (searchInput === "") {
+      setResults(null);
+    }
+  }, [searchInput]);
+
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
@@ -185,7 +191,7 @@ export default function Component() {
         </form>
 
         {/* Search Suggestions */}
-        {(!results && !loading) && (
+        {searchInput === "" && !results && !loading && (
           <div className="space-y-3">
             <div className="overflow-hidden w-full">
               <div className="flex gap-3 animate-scroll-left whitespace-nowrap">
