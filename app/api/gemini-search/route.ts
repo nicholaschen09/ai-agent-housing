@@ -31,11 +31,33 @@ const scrapingTools = [
         }
         return listings
     },
-    // Kijiji (placeholder, returns empty array for now)
-    async function scrapeKijiji(city: string, query: string) {
-        // TODO: Implement real Kijiji scraping logic
-        // For now, just return empty
-        return []
+    // US Census ACS API tool for housing analytics
+    async function censusAcsTool(city: string, query: string) {
+        const apiKey = process.env.CENSUS_API_KEY;
+        // This example fetches median gross rent (B25064) and median contract rent (B25058) for all places in NY (state:36)
+        // You may want to map city names to FIPS codes for more accuracy
+        // For demo, we'll use NY state and filter for the city name in the results
+        const url = `https://api.census.gov/data/2022/acs/acs5?get=NAME,B25064,B25058&for=place:*&in=state:*&key=${apiKey}`;
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            if (!Array.isArray(data) || data.length < 2) return [];
+            // Find the row for the selected city
+            const headers = data[0];
+            const rows = data.slice(1);
+            const cityRow = rows.find((row: string[]) => row[0].toLowerCase().includes(city.toLowerCase()));
+            if (!cityRow) return [];
+            // Map to standard listing format (as analytics, not a live listing)
+            return [{
+                title: `Census ACS Housing Analytics for ${cityRow[0]}`,
+                price: `Median Gross Rent: $${cityRow[1]}, Median Contract Rent: $${cityRow[2]}`,
+                hood: cityRow[0],
+                link: 'https://www.census.gov/data/developers/data-sets/acs-5year.html'
+            }];
+        } catch (err) {
+            console.log('[Census ACS API Error]', err);
+            return [];
+        }
     },
     // Add more scraping tools here (e.g., Zumper, Facebook Marketplace, etc.)
 ]
