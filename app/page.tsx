@@ -79,7 +79,12 @@ export default function Component() {
     "St. Catharines",
     "Oshawa",
     "Barrie",
-    "Kelowna"
+    "Kelowna",
+    "Mountain View",
+    "Atlanta",
+    "Sunnyvale",
+    "Brampton",
+    "Markham"
   ]
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
