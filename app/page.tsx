@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowUp, Plus, Sparkles, ChevronDown } from "lucide-react"
+import { ArrowUp, Plus, Sparkles, ChevronDown, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect, useRef } from "react"
@@ -52,7 +52,34 @@ export default function Component() {
     "Ottawa",
     "Edmonton",
     "Winnipeg",
-    "Quebec City"
+    "Quebec City",
+    "San Diego",
+    "Phoenix",
+    "San Jose",
+    "Denver",
+    "Portland",
+    "Minneapolis",
+    "Detroit",
+    "Baltimore",
+    "Charlotte",
+    "Orlando",
+    "Las Vegas",
+    "Nashville",
+    "Raleigh",
+    "Richmond",
+    "Halifax",
+    "Victoria",
+    "Hamilton",
+    "Kitchener",
+    "London (ON)",
+    "Windsor",
+    "Saskatoon",
+    "Regina",
+    "St. John's",
+    "St. Catharines",
+    "Oshawa",
+    "Barrie",
+    "Kelowna"
   ]
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -85,7 +112,7 @@ export default function Component() {
   }, [dropdownOpen])
 
   useEffect(() => {
-    if (searchInput === "") {
+    if (searchInput === "" && results) {
       setResults(null);
     }
   }, [searchInput]);
@@ -173,13 +200,18 @@ export default function Component() {
                 onMouseLeave={() => setHoveredCity(null)}
               >
                 <div className="sticky top-0 z-20 bg-white px-4 pt-4 pb-2">
-                  <input
-                    type="text"
-                    value={citySearch}
-                    onChange={e => setCitySearch(e.target.value)}
-                    placeholder="Search cities..."
-                    className="w-full rounded-full border border-gray-200 px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-red-200"
-                  />
+                  <div className="relative w-full">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                      <Search className="w-5 h-5" />
+                    </span>
+                    <input
+                      type="text"
+                      value={citySearch}
+                      onChange={e => setCitySearch(e.target.value)}
+                      placeholder="Search cities..."
+                      className="w-full rounded-full border border-gray-200 pl-10 pr-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-red-200"
+                    />
+                  </div>
                 </div>
                 <div className="max-h-60 overflow-y-auto rounded-b-2xl custom-scrollbar">
                   {filteredCities.length === 0 && (
@@ -246,7 +278,7 @@ export default function Component() {
         </form>
 
         {/* Search Suggestions */}
-        {searchInput === "" && !results && !loading && (
+        {!results && !loading && (
           <div className="space-y-3">
             <div className="overflow-hidden w-full">
               <div className="flex gap-3 animate-scroll-left whitespace-nowrap">
