@@ -79,7 +79,7 @@ export default function Component() {
               <div
                 ref={dropdownRef}
                 className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-full shadow-2xl z-10 min-w-[340px] max-h-80 transition-all duration-200 animate-fade-in overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
-                style={{ boxShadow: '0 8px 32px rgba(80, 80, 120, 0.18)', borderRadius: '2rem' }}
+                style={{ boxShadow: '0 8px 32px rgba(80, 80, 120, 0.18)', borderRadius: '1.25rem' }}
               >
                 <div className="sticky top-0 z-20 bg-white px-4 pt-4 pb-2">
                   <input
@@ -130,8 +130,8 @@ export default function Component() {
               />
 
               <div className="flex items-center gap-2">
-                <Button size="sm" className="rounded-full w-10 h-10 p-0 bg-gray-400 hover:bg-gray-500 ml-2" type="submit">
-                  <ArrowUp className="w-4 h-4 rotate-45" />
+                <Button size="sm" className="rounded-full w-10 h-10 p-0 bg-red-100 hover:bg-red-300 ml-2 transition-colors" type="submit">
+                  <ArrowUp className="w-4 h-4 rotate-45 text-red-700 group-hover:text-white transition-colors" />
                 </Button>
               </div>
             </div>
