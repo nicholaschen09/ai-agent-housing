@@ -59,6 +59,30 @@ const scrapingTools = [
             return [];
         }
     },
+    // CMHC Open Data API tool for Canadian housing analytics
+    async function cmhcTool(city: string, query: string) {
+        // CMHC Open Data API does not require an API key for most endpoints
+        // We'll use the "Average Rents" dataset as an example
+        // Docs: https://cmhc-schl-open-data-api.readme.io/
+        const url = `https://cmhc.rapi.com/prod/v1/average-rents?city=${encodeURIComponent(city)}`;
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            if (!data || !Array.isArray(data.data) || data.data.length === 0) return [];
+            // Find the most recent data for the city
+            const cityData = data.data[0];
+            // Map to standard listing format (as analytics, not a live listing)
+            return [{
+                title: `CMHC Housing Analytics for ${cityData.city}`,
+                price: `Average Rent: $${cityData.average_rent}, Vacancy Rate: ${cityData.vacancy_rate}%`,
+                hood: cityData.city,
+                link: 'https://www.cmhc-schl.gc.ca/en/professionals/housing-markets-data-and-research/housing-data/open-data'
+            }];
+        } catch (err) {
+            console.log('[CMHC API Error]', err);
+            return [];
+        }
+    },
     // Add more scraping tools here (e.g., Zumper, Facebook Marketplace, etc.)
 ]
 
