@@ -1,6 +1,9 @@
+'use client'
+
 import { ArrowUp, Plus, Sparkles, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useState, useEffect, useRef } from "react"
 
 export default function Component() {
   const searchSuggestions = [
@@ -12,15 +15,61 @@ export default function Component() {
     "Housing with in-unit laundry",
   ]
 
+  const [selectedCity, setSelectedCity] = useState("New York City")
+  const cityOptions = ["New York City", "San Francisco", "Toronto", "Vancouver"]
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [dropdownOpen])
+
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 py-16">
       <div className="max-w-4xl w-full text-center space-y-12">
         {/* Main Heading */}
         <div className="space-y-4">
-          <h1 className="text-5xl md:text-6xl font-serif text-black leading-tight">The Search Engine for Finding Housing and Rentals</h1>
-          <div className="flex items-center justify-center gap-2">
-            <h2 className="text-5xl md:text-6xl font-serif text-black">New York City</h2>
-            <ChevronDown className="w-8 h-8 text-gray-600 mt-2" />
+          <h1 className="text-5xl md:text-6xl font-serif text-black leading-tight">The Search Engine for Finding Housing and Rentals in</h1>
+          <div className="flex items-center justify-center gap-2 relative">
+            <button
+              className="text-5xl md:text-6xl font-serif text-black flex items-center gap-2 focus:outline-none"
+              onClick={() => setDropdownOpen((open) => !open)}
+            >
+              {selectedCity}
+              <ChevronDown className="w-8 h-8 text-gray-600 mt-2 transition-transform duration-200" style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+            </button>
+            {dropdownOpen && (
+              <div
+                ref={dropdownRef}
+                className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl z-10 min-w-[240px] transition-all duration-200 animate-fade-in"
+                style={{ boxShadow: '0 8px 32px rgba(80, 80, 120, 0.18)' }}
+              >
+                {cityOptions.map((city, idx) => (
+                  <div
+                    key={city}
+                    className={`px-8 py-4 text-xl cursor-pointer transition-colors duration-150 mb-2 last:mb-0 ${selectedCity === city ? 'bg-purple-50 text-purple-900 font-bold' : 'text-gray-900 hover:bg-gray-100'} rounded-full`}
+                    onClick={() => {
+                      setSelectedCity(city)
+                      setDropdownOpen(false)
+                    }}
+                  >
+                    {city}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
