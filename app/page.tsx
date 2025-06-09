@@ -100,7 +100,7 @@ export default function Component() {
             {dropdownOpen && (
               <div
                 ref={dropdownRef}
-                className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-full shadow-2xl z-10 min-w-[340px] max-h-80 transition-all duration-200 animate-fade-in overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+                className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-2xl shadow-2xl z-10 min-w-[340px] transition-all duration-200 animate-fade-in overflow-hidden"
                 style={{ boxShadow: '0 8px 32px rgba(80, 80, 120, 0.18)', borderRadius: '1.25rem' }}
                 onMouseLeave={() => setHoveredCity(null)}
               >
@@ -113,30 +113,32 @@ export default function Component() {
                     className="w-full rounded-full border border-gray-200 px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-red-200"
                   />
                 </div>
-                {filteredCities.length === 0 && (
-                  <div className="px-8 py-6 text-gray-400 text-center">No cities found.</div>
-                )}
-                {filteredCities.map((city, idx) => {
-                  const isActive = selectedCity === city || hoveredCity === city;
-                  return (
-                    <div
-                      key={city}
-                      className={`px-8 py-3 text-xl cursor-pointer transition-colors duration-150
-                        ${selectedCity === city ? 'bg-red-100 text-red-700 shadow-sm' : hoveredCity === city ? 'bg-red-50 text-red-700' : 'text-gray-900 hover:bg-red-50'}
-                        ${isActive ? '' : 'rounded-full'}
-                      `}
-                      onMouseEnter={() => setHoveredCity(city)}
-                      onMouseLeave={() => setHoveredCity(null)}
-                      onClick={() => {
-                        setSelectedCity(city)
-                        setDropdownOpen(false)
-                        setCitySearch("")
-                      }}
-                    >
-                      {city}
-                    </div>
-                  )
-                })}
+                <div className="max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 rounded-b-2xl">
+                  {filteredCities.length === 0 && (
+                    <div className="px-8 py-6 text-gray-400 text-center">No cities found.</div>
+                  )}
+                  {filteredCities.map((city, idx) => {
+                    const isActive = selectedCity === city || hoveredCity === city;
+                    return (
+                      <div
+                        key={city}
+                        className={`px-8 py-3 text-xl cursor-pointer transition-colors duration-150
+                          ${selectedCity === city ? 'bg-red-100 text-red-700 shadow-sm' : hoveredCity === city ? 'bg-red-50 text-red-700' : 'text-gray-900 hover:bg-red-50'}
+                          ${isActive ? '' : 'rounded-full'}
+                        `}
+                        onMouseEnter={() => setHoveredCity(city)}
+                        onMouseLeave={() => setHoveredCity(null)}
+                        onClick={() => {
+                          setSelectedCity(city)
+                          setDropdownOpen(false)
+                          setCitySearch("")
+                        }}
+                      >
+                        {city}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             )}
           </div>
