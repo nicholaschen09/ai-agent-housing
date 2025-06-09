@@ -189,7 +189,7 @@ export default function Component() {
           <div className="space-y-3">
             <div className="overflow-hidden w-full">
               <div className="flex gap-3 animate-scroll-left whitespace-nowrap">
-                {[...searchSuggestions, ...searchSuggestions].map((suggestion, index) => (
+                {[...searchSuggestions, ...searchSuggestions, ...searchSuggestions].map((suggestion, index) => (
                   <Button
                     key={index}
                     variant="outline"
@@ -202,7 +202,7 @@ export default function Component() {
             </div>
             <div className="overflow-hidden w-full">
               <div className="flex gap-3 animate-scroll-right whitespace-nowrap">
-                {[...searchSuggestions, ...searchSuggestions].map((suggestion, index) => (
+                {[...searchSuggestions, ...searchSuggestions, ...searchSuggestions].map((suggestion, index) => (
                   <Button
                     key={index}
                     variant="outline"
