@@ -149,3 +149,8 @@ body {
 .font-inter {
   font-family: 'Inter', sans-serif;
 }
+
+/* Custom hover for suggestion buttons */
+.suggestion-btn:hover {
+  background-color: #fee2e2 !important; /* Tailwind red-100 */
+}

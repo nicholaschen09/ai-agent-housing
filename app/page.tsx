@@ -186,10 +186,10 @@ export default function Component() {
           <h1 className="text-5xl md:text-6xl font-serif text-black leading-tight">The Search Engine for Finding Housing and Rentals in</h1>
           <div className="flex items-center justify-center gap-2 relative">
             <button
-              className="text-5xl md:text-6xl font-serif text-black flex items-center gap-2 focus:outline-none"
+              className="flex items-center gap-2 focus:outline-none transition-colors duration-150"
               onClick={() => setDropdownOpen((open) => !open)}
             >
-              {selectedCity}
+              <span className="text-5xl md:text-6xl font-serif text-black bg-[#fee2e2] rounded-2xl px-4 py-1">{selectedCity}</span>
               <ChevronDown className="w-8 h-8 text-gray-600 mt-2 transition-transform duration-200" style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
             </button>
             {dropdownOpen && (
@@ -248,7 +248,7 @@ export default function Component() {
         <form className="relative max-w-3xl mx-auto" onSubmit={handleSearch} onDrop={handleDrop} onDragOver={handleDragOver}>
           <div className="relative bg-white rounded-3xl border-2 border-red-600 p-4 shadow-sm">
             <div className="flex items-center gap-4">
-              <Button size="sm" variant="ghost" className="rounded-full w-8 h-8 p-0 hover:bg-gray-100" type="button" onClick={handlePlusClick}>
+              <Button size="sm" variant="ghost" className="rounded-full w-8 h-8 p-0 hover:bg-red-100" type="button" onClick={handlePlusClick}>
                 <Plus className="w-4 h-4 text-gray-600" />
                 <input
                   type="file"
@@ -286,7 +286,7 @@ export default function Component() {
                   <Button
                     key={index}
                     variant="outline"
-                    className="rounded-full bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm"
+                    className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm"
                     onClick={() => handleSuggestionClick(suggestion)}
                   >
                     {suggestion}
@@ -300,7 +300,7 @@ export default function Component() {
                   <Button
                     key={index}
                     variant="outline"
-                    className="rounded-full bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm"
+                    className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm"
                     onClick={() => handleSuggestionClick(suggestion)}
                   >
                     {suggestion}
