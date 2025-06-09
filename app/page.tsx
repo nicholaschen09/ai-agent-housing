@@ -53,8 +53,8 @@ export default function Component() {
             {dropdownOpen && (
               <div
                 ref={dropdownRef}
-                className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl z-10 min-w-[240px] transition-all duration-200 animate-fade-in"
-                style={{ boxShadow: '0 8px 32px rgba(80, 80, 120, 0.18)' }}
+                className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-full shadow-2xl z-10 min-w-[240px] transition-all duration-200 animate-fade-in"
+                style={{ boxShadow: '0 8px 32px rgba(80, 80, 120, 0.18)', borderRadius: '2rem' }}
               >
                 {cityOptions.map((city, idx) => (
                   <div
