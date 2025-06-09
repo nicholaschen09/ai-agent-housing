@@ -14,6 +14,21 @@ export default function Component() {
     "Short-term leases available",
     "No-fee apartments",
     "Housing with in-unit laundry",
+    "Furnished rentals",
+    "Apartments with parking",
+    "Utilities included",
+    "Loft apartments",
+    "Downtown condos",
+    "Balcony views",
+    "Student housing",
+    "Family-friendly neighborhoods",
+    "Luxury high-rises",
+    "Affordable housing",
+    "Walk-in closet",
+    "Gym in building",
+    "Rooftop access",
+    "Dog-friendly rentals",
+    "Near public transit"
   ]
 
   const [selectedCity, setSelectedCity] = useState("New York City")
@@ -171,16 +186,33 @@ export default function Component() {
 
         {/* Search Suggestions */}
         {(!results && !loading) && (
-          <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
-            {searchSuggestions.map((suggestion, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                className="rounded-full bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm"
-              >
-                {suggestion}
-              </Button>
-            ))}
+          <div className="space-y-3">
+            <div className="overflow-hidden w-full">
+              <div className="flex gap-3 animate-scroll-left whitespace-nowrap">
+                {[...searchSuggestions, ...searchSuggestions].map((suggestion, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    className="rounded-full bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm"
+                  >
+                    {suggestion}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <div className="overflow-hidden w-full">
+              <div className="flex gap-3 animate-scroll-right whitespace-nowrap">
+                {[...searchSuggestions, ...searchSuggestions].map((suggestion, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    className="rounded-full bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm"
+                  >
+                    {suggestion}
+                  </Button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
         <div className="max-w-3xl mx-auto mt-8 min-h-[80px] text-left">
