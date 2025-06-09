@@ -152,5 +152,6 @@ body {
 
 /* Custom hover for suggestion buttons */
 .suggestion-btn:hover {
-  background-color: #fee2e2 !important; /* Tailwind red-100 */
+  background-color: #fee2e2 !important;
+  /* Tailwind red-100 */
 }
