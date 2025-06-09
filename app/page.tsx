@@ -178,7 +178,7 @@ export default function Component() {
                     const isActive = selectedCity === city || hoveredCity === city;
                     return (
                       <div
-                        key={city}
+                        key={`${city}-${idx}`}
                         className={`px-8 py-3 text-xl cursor-pointer transition-colors duration-150
                           ${selectedCity === city ? 'bg-red-100 text-red-700 shadow-sm' : hoveredCity === city ? 'bg-red-50 text-red-700' : 'text-gray-900 hover:bg-red-50'}
                           ${isActive ? '' : 'rounded-full'}
