@@ -23,6 +23,9 @@ export default function Component() {
   const [searchInput, setSearchInput] = useState("")
   const [results, setResults] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [citySearch, setCitySearch] = useState("")
+
+  const filteredCities = cityOptions.filter(city => city.toLowerCase().includes(citySearch.toLowerCase()))
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -75,10 +78,22 @@ export default function Component() {
             {dropdownOpen && (
               <div
                 ref={dropdownRef}
-                className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-full shadow-2xl z-10 min-w-[240px] transition-all duration-200 animate-fade-in"
+                className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-full shadow-2xl z-10 min-w-[340px] max-h-80 transition-all duration-200 animate-fade-in overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
                 style={{ boxShadow: '0 8px 32px rgba(80, 80, 120, 0.18)', borderRadius: '2rem' }}
               >
-                {cityOptions.map((city, idx) => (
+                <div className="sticky top-0 z-20 bg-white px-4 pt-4 pb-2">
+                  <input
+                    type="text"
+                    value={citySearch}
+                    onChange={e => setCitySearch(e.target.value)}
+                    placeholder="Search cities..."
+                    className="w-full rounded-full border border-gray-200 px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-red-200"
+                  />
+                </div>
+                {filteredCities.length === 0 && (
+                  <div className="px-8 py-6 text-gray-400 text-center">No cities found.</div>
+                )}
+                {filteredCities.map((city, idx) => (
                   <div
                     key={city}
                     className={`px-8 py-3 text-xl cursor-pointer transition-colors duration-150 rounded-full
@@ -87,6 +102,7 @@ export default function Component() {
                     onClick={() => {
                       setSelectedCity(city)
                       setDropdownOpen(false)
+                      setCitySearch("")
                     }}
                   >
                     {city}
