@@ -64,6 +64,7 @@ export default function Component() {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   const filteredCities = cityOptions.filter(city => city.toLowerCase().includes(citySearch.toLowerCase()))
 
@@ -141,6 +142,13 @@ export default function Component() {
 
   function handleRemoveImage() {
     setImageFile(null)
+  }
+
+  function handleSuggestionClick(suggestion: string) {
+    setSearchInput(suggestion)
+    setTimeout(() => {
+      searchInputRef.current?.focus()
+    }, 0)
   }
 
   return (
@@ -225,6 +233,7 @@ export default function Component() {
                 onChange={e => setSearchInput(e.target.value)}
                 placeholder="Apartments for rent in Manhattan, pet-friendly..."
                 className="flex-1 text-lg border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400"
+                ref={searchInputRef}
               />
 
               <div className="flex items-center gap-2">
@@ -246,6 +255,7 @@ export default function Component() {
                     key={index}
                     variant="outline"
                     className="rounded-full bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm"
+                    onClick={() => handleSuggestionClick(suggestion)}
                   >
                     {suggestion}
                   </Button>
@@ -259,6 +269,7 @@ export default function Component() {
                     key={index}
                     variant="outline"
                     className="rounded-full bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm"
+                    onClick={() => handleSuggestionClick(suggestion)}
                   >
                     {suggestion}
                   </Button>
