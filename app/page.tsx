@@ -19,6 +19,9 @@ export default function Component() {
   const cityOptions = ["New York City", "San Francisco", "Toronto", "Vancouver"]
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const [searchInput, setSearchInput] = useState("")
+  const [results, setResults] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -35,6 +38,24 @@ export default function Component() {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [dropdownOpen])
+
+  async function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+    setResults(null)
+    try {
+      const res = await fetch("/api/gemini-search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: searchInput, city: selectedCity })
+      })
+      const data = await res.json()
+      setResults(data.result)
+    } catch (err) {
+      setResults("Sorry, something went wrong.")
+    }
+    setLoading(false)
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 py-16">
@@ -74,39 +95,47 @@ export default function Component() {
         </div>
 
         {/* Search Bar */}
-        <div className="relative max-w-3xl mx-auto">
+        <form className="relative max-w-3xl mx-auto" onSubmit={handleSearch}>
           <div className="relative bg-white rounded-3xl border-2 border-purple-900 p-4 shadow-sm">
             <div className="flex items-center gap-4">
-              <Button size="sm" variant="ghost" className="rounded-full w-8 h-8 p-0 hover:bg-gray-100">
+              <Button size="sm" variant="ghost" className="rounded-full w-8 h-8 p-0 hover:bg-gray-100" type="button">
                 <Plus className="w-4 h-4 text-gray-600" />
               </Button>
 
               <Input
                 type="text"
+                value={searchInput}
+                onChange={e => setSearchInput(e.target.value)}
                 placeholder="Apartments for rent in Manhattan, pet-friendly..."
                 className="flex-1 text-lg border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400"
               />
 
               <div className="flex items-center gap-2">
-                <Button size="sm" className="rounded-full w-10 h-10 p-0 bg-gray-400 hover:bg-gray-500 ml-2">
+                <Button size="sm" className="rounded-full w-10 h-10 p-0 bg-gray-400 hover:bg-gray-500 ml-2" type="submit">
                   <ArrowUp className="w-4 h-4 rotate-45" />
                 </Button>
               </div>
             </div>
           </div>
-        </div>
+        </form>
 
         {/* Search Suggestions */}
-        <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
-          {searchSuggestions.map((suggestion, index) => (
-            <Button
-              key={index}
-              variant="outline"
-              className="rounded-full bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm"
-            >
-              {suggestion}
-            </Button>
-          ))}
+        {(!results && !loading) && (
+          <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
+            {searchSuggestions.map((suggestion, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                className="rounded-full bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm"
+              >
+                {suggestion}
+              </Button>
+            ))}
+          </div>
+        )}
+        <div className="max-w-3xl mx-auto mt-8 min-h-[80px] text-left">
+          {loading && <div className="text-lg text-gray-500">Searching for housing options...</div>}
+          {results && <div className="bg-gray-50 rounded-xl p-6 text-gray-900 whitespace-pre-line">{results}</div>}
         </div>
       </div>
     </div>
