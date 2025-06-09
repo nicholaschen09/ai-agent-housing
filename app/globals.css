@@ -48,6 +48,7 @@ body {
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -88,7 +89,29 @@ body {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #ef4444 #f3f4f6;
+  /* red-500 thumb, gray-100 track */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 8px;
+  background: #f3f4f6;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #ef4444;
+  border-radius: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #dc2626;
 }

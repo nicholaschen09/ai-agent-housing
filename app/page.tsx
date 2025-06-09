@@ -113,7 +113,7 @@ export default function Component() {
                     className="w-full rounded-full border border-gray-200 px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-red-200"
                   />
                 </div>
-                <div className="max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 rounded-b-2xl">
+                <div className="max-h-60 overflow-y-auto rounded-b-2xl custom-scrollbar">
                   {filteredCities.length === 0 && (
                     <div className="px-8 py-6 text-gray-400 text-center">No cities found.</div>
                   )}
