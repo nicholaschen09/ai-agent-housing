@@ -17,13 +17,35 @@ export default function Component() {
   ]
 
   const [selectedCity, setSelectedCity] = useState("New York City")
-  const cityOptions = ["New York City", "San Francisco", "Toronto", "Vancouver"]
+  const cityOptions = [
+    "New York City",
+    "San Francisco",
+    "Toronto",
+    "Vancouver",
+    "Los Angeles",
+    "Chicago",
+    "Boston",
+    "Seattle",
+    "Washington DC",
+    "Miami",
+    "Austin",
+    "Dallas",
+    "Houston",
+    "Philadelphia",
+    "Montreal",
+    "Calgary",
+    "Ottawa",
+    "Edmonton",
+    "Winnipeg",
+    "Quebec City"
+  ]
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [searchInput, setSearchInput] = useState("")
   const [results, setResults] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [citySearch, setCitySearch] = useState("")
+  const [hoveredCity, setHoveredCity] = useState<string | null>(null)
 
   const filteredCities = cityOptions.filter(city => city.toLowerCase().includes(citySearch.toLowerCase()))
 
@@ -80,6 +102,7 @@ export default function Component() {
                 ref={dropdownRef}
                 className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-full shadow-2xl z-10 min-w-[340px] max-h-80 transition-all duration-200 animate-fade-in overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
                 style={{ boxShadow: '0 8px 32px rgba(80, 80, 120, 0.18)', borderRadius: '1.25rem' }}
+                onMouseLeave={() => setHoveredCity(null)}
               >
                 <div className="sticky top-0 z-20 bg-white px-4 pt-4 pb-2">
                   <input
@@ -93,21 +116,27 @@ export default function Component() {
                 {filteredCities.length === 0 && (
                   <div className="px-8 py-6 text-gray-400 text-center">No cities found.</div>
                 )}
-                {filteredCities.map((city, idx) => (
-                  <div
-                    key={city}
-                    className={`px-8 py-3 text-xl cursor-pointer transition-colors duration-150 rounded-full
-                      ${selectedCity === city ? 'bg-red-100 text-red-700 shadow-sm' : 'text-gray-900 hover:bg-red-50'}
-                    `}
-                    onClick={() => {
-                      setSelectedCity(city)
-                      setDropdownOpen(false)
-                      setCitySearch("")
-                    }}
-                  >
-                    {city}
-                  </div>
-                ))}
+                {filteredCities.map((city, idx) => {
+                  const isActive = selectedCity === city || hoveredCity === city;
+                  return (
+                    <div
+                      key={city}
+                      className={`px-8 py-3 text-xl cursor-pointer transition-colors duration-150
+                        ${selectedCity === city ? 'bg-red-100 text-red-700 shadow-sm' : hoveredCity === city ? 'bg-red-50 text-red-700' : 'text-gray-900 hover:bg-red-50'}
+                        ${isActive ? '' : 'rounded-full'}
+                      `}
+                      onMouseEnter={() => setHoveredCity(city)}
+                      onMouseLeave={() => setHoveredCity(null)}
+                      onClick={() => {
+                        setSelectedCity(city)
+                        setDropdownOpen(false)
+                        setCitySearch("")
+                      }}
+                    >
+                      {city}
+                    </div>
+                  )
+                })}
               </div>
             )}
           </div>
