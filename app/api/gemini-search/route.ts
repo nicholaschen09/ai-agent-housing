@@ -1,20 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server'
 import * as cheerio from 'cheerio'
 
-export async function POST(req: NextRequest) {
-    const { query, city } = await req.json()
-    const apiKey = process.env.GEMINI_API_KEY
+// 1. Map city to Craigslist subdomain (expandable)
+const cityMap: Record<string, string> = {
+    "New York City": "newyork",
+    "San Francisco": "sfbay",
+    "Toronto": "toronto",
+    "Vancouver": "vancouver",
+    "Los Angeles": "losangeles",
+    "Chicago": "chicago",
+    "Boston": "boston",
+    "Seattle": "seattle",
+    "Washington DC": "washingtondc",
+    "Miami": "miami",
+    "Atlanta": "atlanta",
+    "Dallas": "dallas",
+    "Houston": "houston",
+    "Philadelphia": "philadelphia",
+    "Montreal": "montreal",
+    "Calgary": "calgary",
+    "Ottawa": "ottawa",
+    "Edmonton": "edmonton",
+    "Winnipeg": "winnipeg",
+    "Quebec City": "quebec",
+    "San Diego": "sandiego",
+    "Phoenix": "phoenix",
+    "San Jose": "sanjose",
+    "Denver": "denver",
+    "Portland": "portland",
+    "Minneapolis": "minneapolis",
+    "Detroit": "detroit",
+    "Baltimore": "baltimore",
+    "Charlotte": "charlotte",
+    "Orlando": "orlando",
+    "Las Vegas": "lasvegas",
+    "Nashville": "nashville",
+    "Mountain View": "sfbay",
+    "Sunnyvale": "sfbay",
+    "Brampton": "toronto",
+    "Markham": "toronto"
+    // Add more as needed
+}
 
-    // Map city to Craigslist subdomain
-    const cityMap: Record<string, string> = {
-        "New York City": "newyork",
-        "San Francisco": "sfbay",
-        "Toronto": "toronto",
-        "Vancouver": "vancouver"
-    }
+// 2. Scrape Craigslist for listings
+async function scrapeCraigslist(city: string, query: string) {
     const craigslistCity = cityMap[city] || "newyork"
     const url = `https://${craigslistCity}.craigslist.org/search/apa?query=${encodeURIComponent(query)}`
-
     let listings: { title: string, price: string, hood: string, link: string }[] = []
     try {
         const res = await fetch(url, {
@@ -31,13 +62,19 @@ export async function POST(req: NextRequest) {
             const link = $(el).find('.result-title').attr('href') || ''
             listings.push({ title, price, hood, link })
         })
-        console.log(`Craigslist listings found: ${listings.length}`)
     } catch (err) {
-        return NextResponse.json({ result: 'Error scraping listings.' }, { status: 500 })
+        throw new Error('Error scraping listings.')
     }
+    return listings
+}
 
-    // Summarize with Gemini
-    const prompt = `You are a helpful AI housing assistant. Here are some live listings for "${query}" in ${city} (from Craigslist):\n\n${listings.slice(0, 10).map(l => `- ${l.title} (${l.price}) ${l.hood} [View Listing](${l.link})`).join('\n')}\n\nSummarize the best options, give tips, and highlight anything notable. Do NOT make up listings.`
+// 3. Generate a prompt for Gemini
+function generateGeminiPrompt(query: string, city: string, listings: { title: string, price: string, hood: string, link: string }[]) {
+    return `You are a helpful AI housing assistant. Here are some live listings for "${query}" in ${city} (from Craigslist):\n\n${listings.slice(0, 10).map(l => `- ${l.title} (${l.price}) ${l.hood} [View Listing](${l.link})`).join('\n')}\n\nSummarize the best options, give tips, and highlight anything notable. Do NOT make up listings.`
+}
+
+// 4. Call Gemini API
+async function callGemini(apiKey: string, prompt: string) {
     try {
         const geminiRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + apiKey, {
             method: 'POST',
@@ -45,9 +82,26 @@ export async function POST(req: NextRequest) {
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         })
         const geminiData = await geminiRes.json()
-        const result = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || 'No results found.'
-        return NextResponse.json({ result })
+        return geminiData.candidates?.[0]?.content?.parts?.[0]?.text || 'No results found.'
     } catch (err) {
-        return NextResponse.json({ result: 'Error contacting Gemini API.' }, { status: 500 })
+        throw new Error('Error contacting Gemini API.')
+    }
+}
+
+// 5. Agent Orchestration
+export async function POST(req: NextRequest) {
+    const { query, city } = await req.json()
+    const apiKey = process.env.GEMINI_API_KEY
+
+    try {
+        // Step 1: Scrape listings
+        const listings = await scrapeCraigslist(city, query)
+        // Step 2: Generate prompt
+        const prompt = generateGeminiPrompt(query, city, listings)
+        // Step 3: Call Gemini
+        const result = await callGemini(apiKey!, prompt)
+        return NextResponse.json({ result })
+    } catch (err: any) {
+        return NextResponse.json({ result: err.message || 'Unknown error.' }, { status: 500 })
     }
 } 
