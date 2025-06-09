@@ -99,19 +99,20 @@ body {
 
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #ef4444 #f3f4f6;
-  /* red-500 thumb, gray-100 track */
+  scrollbar-color: #ef4444 #fee2e2;
+  /* red-500 thumb, red-100 track */
 }
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 10px;
   border-radius: 8px;
-  background: #f3f4f6;
+  background: #fee2e2;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #ef4444;
   border-radius: 8px;
+  min-height: 200px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
