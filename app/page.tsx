@@ -251,20 +251,6 @@ export default function Component() {
                 ))}
               </div>
             </div>
-            <div className="overflow-hidden w-full">
-              <div className="flex gap-3 animate-scroll-right whitespace-nowrap">
-                {[...searchSuggestions, ...searchSuggestions, ...searchSuggestions].map((suggestion, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                  >
-                    {suggestion}
-                  </Button>
-                ))}
-              </div>
-            </div>
           </div>
         )}
         <div className="max-w-3xl mx-auto mt-8 min-h-[80px] text-left">

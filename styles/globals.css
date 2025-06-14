@@ -92,3 +92,21 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.marquee-outer {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+}
+.marquee-inner {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 20s linear infinite;
+}
+.suggestion-btn {
+  display: inline-block;
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
