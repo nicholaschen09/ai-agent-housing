@@ -324,6 +324,13 @@ export default function Component() {
           )}
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="fixed bottom-0 left-0 right-0 py-4 text-center bg-white/80 backdrop-blur-sm border-t border-gray-100">
+        <p className="text-sm text-gray-500 font-serif">
+          Made by <a href="https://twitter.com/nicholaschen__" target="_blank" rel="noopener noreferrer" className="text-red-600 hover:text-red-700 underline">Nicholas Chen</a>
+        </p>
+      </footer>
     </div>
   )
 }
