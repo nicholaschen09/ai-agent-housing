@@ -125,26 +125,59 @@ body {
   }
 
   100% {
-    transform: translateX(-33.3333%);
+    transform: translateX(-100%);
   }
 }
 
 @keyframes scroll-right {
   0% {
-    transform: translateX(0);
+    transform: translateX(-100%);
   }
 
   100% {
-    transform: translateX(33.3333%);
+    transform: translateX(0);
   }
 }
 
 .animate-scroll-left {
-  animation: scroll-left 10s linear infinite;
+  animation: scroll-left 35s linear infinite;
 }
 
 .animate-scroll-right {
-  animation: scroll-right 10s linear infinite;
+  animation: scroll-right 35s linear infinite;
+}
+
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  position: relative;
+}
+
+.marquee-content {
+  display: inline-flex;
+  gap: 0.75rem;
+  animation: scroll-left 35s linear infinite;
+  width: max-content;
+}
+
+.marquee-content:hover {
+  animation-play-state: paused;
+}
+
+/* Ensure seamless loop by making the animation move exactly the width of one set */
+@keyframes scroll-left-seamless {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-seamless {
+  animation: scroll-left-seamless 35s linear infinite;
 }
 
 .font-inter {

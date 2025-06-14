@@ -237,13 +237,25 @@ export default function Component() {
         {/* Search Suggestions */}
         {!results && !loading && (
           <div className="space-y-3">
-            <div className="overflow-hidden w-full">
-              <div className="flex gap-3 animate-scroll-left whitespace-nowrap">
-                {[...searchSuggestions, ...searchSuggestions, ...searchSuggestions].map((suggestion, index) => (
+            <div className="marquee-container">
+              <div className="marquee-content marquee-seamless">
+                {/* First set of suggestions */}
+                {searchSuggestions.map((suggestion, index) => (
                   <Button
-                    key={index}
+                    key={`first-${index}`}
                     variant="outline"
-                    className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm"
+                    className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm whitespace-nowrap flex-shrink-0"
+                    onClick={() => handleSuggestionClick(suggestion)}
+                  >
+                    {suggestion}
+                  </Button>
+                ))}
+                {/* Duplicate set for seamless loop */}
+                {searchSuggestions.map((suggestion, index) => (
+                  <Button
+                    key={`second-${index}`}
+                    variant="outline"
+                    className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm whitespace-nowrap flex-shrink-0"
                     onClick={() => handleSuggestionClick(suggestion)}
                   >
                     {suggestion}

@@ -104,7 +104,7 @@ body {
 .marquee-inner {
   display: inline-block;
   white-space: nowrap;
-  animation: marquee 20s linear infinite;
+  animation: marquee 5s linear infinite;
 }
 
 .suggestion-btn {
