@@ -203,7 +203,24 @@ export default function Component() {
 
         {/* Search Bar */}
         <form className="relative max-w-3xl mx-auto" onSubmit={handleSearch} onDrop={handleDrop} onDragOver={handleDragOver}>
-          <div className="relative bg-white rounded-3xl border-2 border-red-600 p-4 shadow-sm">
+          <div className={`relative bg-white rounded-3xl border-2 border-red-600 shadow-sm transition-all duration-200 ${imagePreview ? 'p-4 pb-4' : 'p-4'}`}>
+            {/* Image Preview inside search bar */}
+            {imagePreview && (
+              <div className="mb-3 flex items-start">
+                <div className="relative">
+                  <img src={imagePreview} alt="Uploaded preview" className="w-16 h-16 object-cover rounded-2xl shadow" />
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow hover:bg-gray-100"
+                    aria-label="Remove image"
+                  >
+                    <span className="text-lg text-gray-700">×</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="flex items-center gap-4">
               <Button size="sm" variant="ghost" className="rounded-full w-8 h-8 p-0 hover:bg-red-100" type="button" onClick={handlePlusClick}>
                 <Plus className="w-4 h-4 text-gray-600" />
@@ -306,21 +323,6 @@ export default function Component() {
             <div className="mt-2 text-xs text-gray-500">Image selected: {imageFile.name}</div>
           )}
         </div>
-        {imagePreview && (
-          <div className="flex items-start mb-6 pl-8 relative" style={{ minHeight: 64 }}>
-            <div className="relative">
-              <img src={imagePreview} alt="Uploaded preview" className="w-16 h-16 object-cover rounded-2xl shadow" />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow hover:bg-gray-100"
-                aria-label="Remove image"
-              >
-                <span className="text-lg text-gray-700">×</span>
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )
