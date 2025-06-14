@@ -154,6 +154,27 @@ body {
   position: relative;
 }
 
+.marquee-container::before,
+.marquee-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.marquee-container::before {
+  left: 0;
+  background: linear-gradient(to right, white, transparent);
+}
+
+.marquee-container::after {
+  right: 0;
+  background: linear-gradient(to left, white, transparent);
+}
+
 .marquee-content {
   display: inline-flex;
   gap: 0.75rem;
