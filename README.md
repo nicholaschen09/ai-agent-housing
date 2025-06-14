@@ -1,6 +1,6 @@
 # Housing Search Engine
 
-A modern web app for searching housing and rentals in major cities.
+A modern web app using ai agents for searching housing and rentals in major cities.
 
 ## Features
 - Search for apartments and rentals with smart suggestions
