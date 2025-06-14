@@ -237,6 +237,7 @@ export default function Component() {
         {/* Search Suggestions */}
         {!results && !loading && (
           <div className="space-y-3">
+            {/* First row - scrolling left */}
             <div className="marquee-container">
               <div className="marquee-content marquee-seamless">
                 {/* First set of suggestions */}
@@ -254,6 +255,34 @@ export default function Component() {
                 {searchSuggestions.map((suggestion, index) => (
                   <Button
                     key={`second-${index}`}
+                    variant="outline"
+                    className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm whitespace-nowrap flex-shrink-0"
+                    onClick={() => handleSuggestionClick(suggestion)}
+                  >
+                    {suggestion}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Second row - scrolling right */}
+            <div className="marquee-container">
+              <div className="marquee-content marquee-seamless-right">
+                {/* First set of suggestions (reversed order for variety) */}
+                {[...searchSuggestions].reverse().map((suggestion, index) => (
+                  <Button
+                    key={`right-first-${index}`}
+                    variant="outline"
+                    className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm whitespace-nowrap flex-shrink-0"
+                    onClick={() => handleSuggestionClick(suggestion)}
+                  >
+                    {suggestion}
+                  </Button>
+                ))}
+                {/* Duplicate set for seamless loop */}
+                {[...searchSuggestions].reverse().map((suggestion, index) => (
+                  <Button
+                    key={`right-second-${index}`}
                     variant="outline"
                     className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm whitespace-nowrap flex-shrink-0"
                     onClick={() => handleSuggestionClick(suggestion)}

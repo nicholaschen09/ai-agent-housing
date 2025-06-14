@@ -180,6 +180,21 @@ body {
   animation: scroll-left-seamless 35s linear infinite;
 }
 
+/* Right-scrolling seamless animation */
+@keyframes scroll-right-seamless {
+  0% {
+    transform: translateX(-50%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.marquee-seamless-right {
+  animation: scroll-right-seamless 35s linear infinite;
+}
+
 .font-inter {
   font-family: 'Inter', sans-serif;
 }
