@@ -361,7 +361,7 @@ export default function Component() {
             </div>
           )}
           {isStreaming && !loading && !isThinking && (
-            <div className="bg-gray-50 rounded-xl p-6 text-gray-900 whitespace-pre-line">
+            <div className="bg-red-50 rounded-xl p-6 text-gray-900 whitespace-pre-line">
               <ReactMarkdown>{results}</ReactMarkdown>
               <div className="mt-2 text-sm text-blue-500 animate-pulse">Streaming analysis...</div>
             </div>
