@@ -72,32 +72,38 @@ async function scrapeCraigslist(city: string, query: string) {
 // 3. Generate a prompt for Gemini with SearchAgent listings
 function generateGeminiPrompt(query: string, city: string, listings: any[]) {
     if (listings.length === 0) {
-        return `You are an expert housing analyst. A user is searching for "${query}" in ${city}. 
+        return `You are an expert housing analyst with 20+ years of experience in ${city}. A user is searching for "${query}" in ${city}. 
 
-**INSTRUCTIONS**: 
-1. Think step-by-step through your analysis
-2. Show your reasoning process clearly
-3. End with DEFINITIVE RECOMMENDATIONS
+**CRITICAL INSTRUCTIONS**: 
+- Give SPECIFIC, actionable recommendations
+- NO generic advice
+- Provide EXACT neighborhoods, price ranges, and concrete steps
+- Be definitive in your conclusions
 
 Structure your response as:
 
 ## **Analysis Process**
-[Show your thinking step by step - market conditions, price analysis, location factors]
+[Analyze the ${city} market for "${query}" - current conditions, typical pricing, best areas]
 
 ## **My Definitive Recommendations**
-[Give specific, actionable advice - exact neighborhoods, price ranges, next steps]
 
-Provide specific, helpful advice about:
-- Typical price ranges for this type of housing in ${city}
-- Best neighborhoods to look in
-- Tips for finding "${query}"
-- What to expect in terms of amenities and features
-- Practical next steps
+You MUST provide:
 
-Be specific and give definitive guidance.`
+1. **EXACT NEIGHBORHOODS**: Name 3-5 specific areas in ${city} perfect for "${query}" with typical price ranges
+2. **SPECIFIC BUDGET EXPECTATIONS**: Tell them exactly what they'll pay for different unit types
+3. **BEST SEARCH PLATFORMS**: Which specific websites/apps to use and how often to check
+4. **IMMEDIATE ACTION PLAN**: 5 concrete steps to take this week
+
+Based on your expertise in ${city}, provide:
+- Exact price ranges for "${query}" in different neighborhoods
+- Specific buildings or complexes known for this type of housing
+- Best times of year/month to search
+- Exact search strategies that work in ${city}
+
+NO GENERIC ADVICE. Give specific expert guidance as their personal ${city} housing consultant.`
     }
 
-    return `You are an expert housing analyst. I found ${listings.length} listings across multiple platforms for "${query}" in ${city}:
+    return `You are an expert housing analyst with 20+ years of experience. I found ${listings.length} listings across multiple platforms for "${query}" in ${city}:
 
 ${listings.slice(0, 15).map(l => `**${l.title}** - ${l.price}
 Location: ${l.location} | Platform: ${l.platform}
@@ -106,26 +112,33 @@ ${l.description}
 [View Listing](${l.link})
 `).join('\n')}
 
-**INSTRUCTIONS**: 
-1. Think step-by-step through your analysis of these listings
-2. Show your reasoning process clearly
-3. End with DEFINITIVE RECOMMENDATIONS
+**CRITICAL INSTRUCTIONS**: 
+- You MUST give specific, actionable recommendations
+- NO generic advice like "expand your search" or "verify listings"
+- Give EXACT neighborhoods, price ranges, and concrete next steps
+- Be definitive in your conclusions
 
 Structure your response as:
 
 ## **Market Analysis Process**
-[Analyze the data step by step - price trends, location patterns, platform differences]
+[Step-by-step analysis: price trends, best value areas, market conditions]
 
 ## **My Definitive Recommendations**
-[Give specific, actionable recommendations based on your analysis]
 
-Analyze these listings and provide:
-- Market summary with price trends and availability
-- Top 3 specific recommendations with reasoning
-- Neighborhood analysis comparing different areas
-- Definitive next steps for the user
+You MUST provide:
 
-Be specific and give clear, definitive guidance.`
+1. **EXACT ACTION PLAN**: Which specific listings to pursue first and why
+2. **SPECIFIC NEIGHBORHOODS**: Name exact areas in ${city} to focus on with price ranges
+3. **DEFINITIVE BUDGET GUIDANCE**: Tell them exactly what to expect to pay and for what type of unit
+4. **IMMEDIATE NEXT STEPS**: Specific actions to take this week (not generic advice)
+
+Based on this data, give me your expert opinion on:
+- Which of these listings represents the best value and why
+- Exact neighborhoods to prioritize for "${query}" searches
+- Specific price expectations they should have
+- Concrete action steps for the next 7 days
+
+NO GENERIC ADVICE. Give specific, expert recommendations as if you're their personal housing consultant.`
 }
 
 // 4. Call Gemini API
@@ -192,27 +205,27 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        console.log('🚀 Initializing Search Agent for:', query, 'in', city)
+        console.log('Initializing Search Agent for:', query, 'in', city)
 
         // Step 1: Initialize Search Agent
         const searchAgent = new SearchAgent(apiKey!)
 
         // Step 2: Execute intelligent multi-platform search
         const listings = await searchAgent.executeSearch(query, city)
-        console.log(`🎯 Search Agent found ${listings.length} listings across multiple platforms`)
+        console.log(`Search Agent found ${listings.length} listings across multiple platforms`)
 
         // Step 3: Generate enhanced prompt with agent results
         const prompt = generateGeminiPrompt(query, city, listings)
         console.log('Generated enhanced prompt length:', prompt.length)
 
         // Step 4: Call Gemini for analysis
-        console.log('🧠 Calling Gemini for market analysis...')
+        console.log('Calling Gemini for market analysis...')
         const result = await callGemini(apiKey!, prompt)
-        console.log('✅ Gemini analysis complete, length:', result.length)
+        console.log('Gemini analysis complete, length:', result.length)
 
         return NextResponse.json({ result, streaming: true })
     } catch (err: any) {
-        console.error('❌ Error in AI Agent system:', err)
+        console.error('Error in AI Agent system:', err)
         return NextResponse.json({ result: err.message || 'Unknown error.' }, { status: 500 })
     }
 } 
