@@ -353,7 +353,7 @@ export default function Component() {
           </div>
         )}
         <div className="max-w-3xl mx-auto mt-8 min-h-[80px] text-left">
-          {loading && <div className="text-lg text-gray-500">deploying AI agent...</div>}
+          {loading && <div className="text-lg text-gray-500">Deploying AI agent...</div>}
           {isThinking && !loading && (
             <div className="bg-gray-50 rounded-xl p-6 text-center">
               <div className="text-lg text-blue-600 animate-pulse">Thinking...</div>
