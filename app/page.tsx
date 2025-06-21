@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowUp, Plus, Sparkles, ChevronDown, Search } from "lucide-react"
+import { ArrowUp, Plus, Sparkles, ChevronDown, Search, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect, useRef } from "react"
@@ -45,12 +45,15 @@ export default function Component() {
   const [loading, setLoading] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
   const [isThinking, setIsThinking] = useState(false)
+  const [showFullAnalysis, setShowFullAnalysis] = useState(false)
+  const [fullAnalysisText, setFullAnalysisText] = useState<string | null>(null)
   const [citySearch, setCitySearch] = useState("")
   const [hoveredCity, setHoveredCity] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const [loadingDots, setLoadingDots] = useState("")
 
   const filteredCities = cityOptions.filter(city => city.toLowerCase().includes(citySearch.toLowerCase()))
 
@@ -86,6 +89,40 @@ export default function Component() {
     }
   }, [imageFile])
 
+  // Loading dots animation
+  useEffect(() => {
+    let interval: NodeJS.Timeout
+    if (loading) {
+      interval = setInterval(() => {
+        setLoadingDots(prev => {
+          if (prev === "") return "."
+          if (prev === ".") return ".."
+          if (prev === "..") return "..."
+          return ""
+        })
+      }, 500)
+    } else {
+      setLoadingDots("")
+    }
+    return () => {
+      if (interval) clearInterval(interval)
+    }
+  }, [loading])
+
+  // Function to extract final recommendations from AI response
+  function extractFinalRecommendations(text: string): string {
+    const sections = text.split('## **My Definitive Recommendations**')
+    if (sections.length > 1) {
+      return '## **My Definitive Recommendations**' + sections[1]
+    }
+    // Fallback if the exact format isn't found
+    const finalSection = text.split(/##.*[Rr]ecommendations?.*\*\*/i)
+    if (finalSection.length > 1) {
+      return '## **My Recommendations**' + finalSection[1]
+    }
+    return text // Return full text if no recommendations section found
+  }
+
   // Streaming effect function - letter by letter
   function streamText(text: string, callback: (partial: string) => void) {
     const characters = text.split('')
@@ -113,6 +150,7 @@ export default function Component() {
     setResults(null)
     setIsStreaming(false)
     setIsThinking(false)
+    setFullAnalysisText(null)
 
     try {
       const res = await fetch("/api/gemini-search", {
@@ -124,14 +162,19 @@ export default function Component() {
 
       setLoading(false)
       setIsThinking(true)
+      setFullAnalysisText(data.result) // Store the full analysis
 
       // Show "thinking..." for 2 seconds before starting to stream
       setTimeout(() => {
         setIsThinking(false)
         setIsStreaming(true)
 
+        // Choose what to display based on dropdown selection
+        // Always start with recommendations only (closed state) unless user has opened it
+        const textToStream = showFullAnalysis ? data.result : extractFinalRecommendations(data.result)
+
         // Start streaming the text letter by letter
-        streamText(data.result, (partialText) => {
+        streamText(textToStream, (partialText) => {
           setResults(partialText)
         })
       }, 2000)
@@ -174,6 +217,26 @@ export default function Component() {
     setTimeout(() => {
       searchInputRef.current?.focus()
     }, 0)
+  }
+
+  // Function to handle toggling between full analysis and recommendations
+  function handleToggleThinking() {
+    const newShowFullAnalysis = !showFullAnalysis
+    setShowFullAnalysis(newShowFullAnalysis)
+
+    // If we have full analysis text, immediately switch the displayed content
+    if (fullAnalysisText) {
+      // Use the NEW state to determine what to show
+      // When newShowFullAnalysis is true: show full analysis
+      // When newShowFullAnalysis is false: show only recommendations
+      const textToShow = newShowFullAnalysis ? fullAnalysisText : extractFinalRecommendations(fullAnalysisText)
+      setResults(textToShow)
+
+      // Stop streaming if currently streaming
+      if (isStreaming) {
+        setIsStreaming(false)
+      }
+    }
   }
 
   return (
@@ -353,21 +416,59 @@ export default function Component() {
           </div>
         )}
         <div className="max-w-3xl mx-auto mt-8 min-h-[80px] text-left">
-          {loading && <div className="text-lg text-gray-500">Deploying AI agent...</div>}
+          {loading && (
+            <div className="bg-gray-50 rounded-xl p-6">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="w-5 h-5 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                </div>
+                <div className="text-lg text-gray-600">Deploying AI agent{loadingDots}</div>
+              </div>
+            </div>
+          )}
           {isThinking && !loading && (
-            <div className="bg-gray-50 rounded-xl p-6 text-center">
-              <div className="text-lg text-blue-600 animate-pulse">Thinking...</div>
-              <div className="text-sm text-gray-500 mt-2">Analyzing market data and formulating recommendations</div>
+            <div className="bg-gray-50 rounded-xl p-6">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="w-5 h-5 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                </div>
+                <div className="text-lg text-gray-600">Thinking...</div>
+              </div>
+              <div className="text-sm text-gray-500 mt-3 ml-8">Analyzing market data and formulating recommendations</div>
             </div>
           )}
           {isStreaming && !loading && !isThinking && (
-            <div className="bg-red-50 rounded-xl p-6 text-gray-900 whitespace-pre-line">
+            <div className="bg-red-100 rounded-xl p-6 text-gray-900 whitespace-pre-line border border-red-200">
+              <div className="mb-4 flex items-center justify-between">
+                <button
+                  onClick={handleToggleThinking}
+                  className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors group"
+                >
+                  <div className="flex items-center gap-1">
+                    <Sparkles className="w-4 h-4 text-blue-500" />
+                    <span className="font-medium">Show thinking</span>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showFullAnalysis ? 'rotate-180' : ''}`} />
+                </button>
+                <div className="text-sm text-red-600 animate-pulse font-medium">Streaming analysis...</div>
+              </div>
               <ReactMarkdown>{results}</ReactMarkdown>
-              <div className="mt-2 text-sm text-blue-500 animate-pulse">Streaming analysis...</div>
             </div>
           )}
           {results && !isStreaming && !loading && !isThinking && (
             <div className="bg-gray-50 rounded-xl p-6 text-gray-900 whitespace-pre-line">
+              <div className="mb-4">
+                <button
+                  onClick={handleToggleThinking}
+                  className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors group"
+                >
+                  <div className="flex items-center gap-1">
+                    <Sparkles className="w-4 h-4 text-blue-500" />
+                    <span className="font-medium">Show thinking</span>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showFullAnalysis ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
               <ReactMarkdown>{results}</ReactMarkdown>
               <div className="mt-4 text-xs text-gray-500">Results are generated by AI and are for informational purposes only. For live listings, use a trusted housing platform.</div>
             </div>
@@ -381,7 +482,7 @@ export default function Component() {
       {/* Footer */}
       <footer className="fixed bottom-0 left-0 right-0 py-4 text-center bg-white/80 backdrop-blur-sm border-t border-gray-100">
         <p className="text-sm text-gray-500 font-serif">
-          By a<a href="https://twitter.com/nicholaschen__" target="_blank" rel="noopener noreferrer" className="text-red-600 hover:text-red-700 underline">@nicholaschen__</a> © 2025
+          By <a href="https://twitter.com/nicholaschen__" target="_blank" rel="noopener noreferrer" className="text-red-600 hover:text-red-700 underline">@nicholaschen__</a> © 2025
         </p>
       </footer>
     </div>
