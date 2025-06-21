@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowUp, Plus, Sparkles, ChevronDown, Search, Settings, Menu, X, Edit } from "lucide-react"
+import { ArrowUp, Plus, Sparkles, ChevronDown, Search, Settings, Menu, X, Edit, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect, useRef } from "react"
@@ -55,6 +55,7 @@ export default function Component() {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const [loadingDots, setLoadingDots] = useState("")
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarHovered, setSidebarHovered] = useState(false)
 
   const filteredCities = cityOptions.filter(city => city.toLowerCase().includes(citySearch.toLowerCase()))
 
@@ -243,24 +244,66 @@ export default function Component() {
   return (
     <div className="min-h-screen bg-white flex">
       {/* Simple Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-16 bg-red-50 border-r border-red-100 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:inset-0`}>
-        <div className="flex flex-col h-full justify-between items-center py-4">
+      <div
+        className={`fixed inset-y-0 left-0 z-50 ${sidebarHovered ? 'w-64' : 'w-16'} bg-red-50 border-r border-red-100 transform transition-all duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:inset-0`}
+        onMouseEnter={() => setSidebarHovered(true)}
+        onMouseLeave={() => setSidebarHovered(false)}
+      >
+        <div className="flex flex-col h-full justify-between py-4">
+          {/* Search icon in top right when expanded */}
+          {sidebarHovered && (
+            <div className="flex justify-end px-4 mb-4">
+              <Search className="w-6 h-6 text-red-400" />
+            </div>
+          )}
+
           {/* Top icons */}
-          <div className="flex flex-col items-center space-y-6">
-            {/* Hamburger menu icon */}
-            <button className="p-2 text-red-400 hover:text-red-600">
-              <Menu className="w-6 h-6" />
+          <div className="flex flex-col space-y-2">
+            {/* New chat */}
+            <button className="flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-600 hover:bg-red-100 rounded-lg mx-2 transition-colors">
+              <Edit className="w-6 h-6 flex-shrink-0" />
+              {sidebarHovered && <span className="text-gray-700 whitespace-nowrap">New chat</span>}
             </button>
 
-            {/* Edit icon */}
-            <button className="p-2 text-red-400 hover:text-red-600">
-              <Edit className="w-6 h-6" />
+            {/* Explore Gems */}
+            <button className="flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-600 hover:bg-red-100 rounded-lg mx-2 transition-colors">
+              <Heart className="w-6 h-6 flex-shrink-0" />
+              {sidebarHovered && <span className="text-gray-700 whitespace-nowrap">Explore Gems</span>}
             </button>
+
+            {/* Recent section */}
+            {sidebarHovered && (
+              <div className="px-4 mt-6">
+                <h3 className="text-sm font-medium text-gray-500 mb-3">Recent</h3>
+                <div className="space-y-1">
+                  <div className="py-2 px-2 text-sm text-gray-600 hover:bg-red-100 rounded-lg cursor-pointer">
+                    Tic-Tac-Toe Game Creation
+                  </div>
+                  <div className="py-2 px-2 text-sm text-white bg-blue-600 rounded-lg cursor-pointer">
+                    SYDE 162 Assignment Help
+                  </div>
+                  <div className="py-2 px-2 text-sm text-gray-600 hover:bg-red-100 rounded-lg cursor-pointer">
+                    Image Ideas: Difficulty and ...
+                  </div>
+                  <div className="py-2 px-2 text-sm text-gray-600 hover:bg-red-100 rounded-lg cursor-pointer">
+                    Pinstriped Pants' Origin Unk...
+                  </div>
+                  <div className="py-2 px-2 text-sm text-gray-600 hover:bg-red-100 rounded-lg cursor-pointer">
+                    Swiss Cheese Model Explain...
+                  </div>
+                  <button className="py-2 px-2 text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
+                    Show more
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Settings icon at bottom */}
-          <button className="p-2 text-red-400 hover:text-red-600">
-            <Settings className="w-6 h-6" />
+          {/* Settings at bottom */}
+          <button className="flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-600 hover:bg-red-100 rounded-lg mx-2 transition-colors">
+            <Settings className="w-6 h-6 flex-shrink-0" />
+            {sidebarHovered && <span className="text-gray-700 whitespace-nowrap">Settings & help</span>}
           </button>
         </div>
       </div>
@@ -275,6 +318,16 @@ export default function Component() {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-16">
+        {/* Chat title - top left */}
+        {!sidebarHovered && (
+          <div className="fixed top-4 left-20 z-30 lg:left-20">
+            <h2 className="text-lg font-medium text-gray-800 flex items-center gap-2">
+              <ChevronDown className="w-4 h-4" />
+              Housing Search Assistant
+            </h2>
+          </div>
+        )}
+
         {/* Mobile menu button */}
         <button
           onClick={() => setSidebarOpen(true)}
