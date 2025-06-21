@@ -72,18 +72,32 @@ async function scrapeCraigslist(city: string, query: string) {
 // 3. Generate a prompt for Gemini with SearchAgent listings
 function generateGeminiPrompt(query: string, city: string, listings: any[]) {
     if (listings.length === 0) {
-        return `You are a helpful AI housing assistant. A user is searching for "${query}" in ${city}. While I couldn't fetch live listings right now, please provide helpful advice about:
+        return `You are an expert housing analyst. A user is searching for "${query}" in ${city}. 
 
-1. Typical price ranges for this type of housing in ${city}
-2. Best neighborhoods to look in
-3. Tips for finding "${query}" 
-4. What to expect in terms of amenities and features
-5. Practical advice for the housing search process
+**INSTRUCTIONS**: 
+1. Think step-by-step through your analysis
+2. Show your reasoning process clearly
+3. End with DEFINITIVE RECOMMENDATIONS
 
-Be specific and helpful. Format your response with markdown for good readability.`
+Structure your response as:
+
+## 🤔 **Analysis Process**
+[Show your thinking step by step - market conditions, price analysis, location factors]
+
+## 🎯 **My Definitive Recommendations**
+[Give specific, actionable advice - exact neighborhoods, price ranges, next steps]
+
+Provide specific, helpful advice about:
+- Typical price ranges for this type of housing in ${city}
+- Best neighborhoods to look in
+- Tips for finding "${query}"
+- What to expect in terms of amenities and features
+- Practical next steps
+
+Be specific and give definitive guidance.`
     }
 
-    return `You are a helpful AI housing assistant. I found ${listings.length} listings across multiple platforms for "${query}" in ${city}:
+    return `You are an expert housing analyst. I found ${listings.length} listings across multiple platforms for "${query}" in ${city}:
 
 ${listings.slice(0, 15).map(l => `**${l.title}** - ${l.price}
 📍 ${l.location} | 🏢 Platform: ${l.platform}
@@ -92,14 +106,26 @@ ${l.description}
 [View Listing](${l.link})
 `).join('\n')}
 
-Based on these listings, provide:
-1. **Market Summary**: Price trends and availability
-2. **Top Recommendations**: Best 3-4 options and why
-3. **Neighborhood Analysis**: Compare different areas
-4. **Search Tips**: How to find more options like these
-5. **Next Steps**: Practical advice for contacting landlords
+**INSTRUCTIONS**: 
+1. Think step-by-step through your analysis of these listings
+2. Show your reasoning process clearly
+3. End with DEFINITIVE RECOMMENDATIONS
 
-Format your response with clear markdown sections.`
+Structure your response as:
+
+## 🤔 **Market Analysis Process**
+[Analyze the data step by step - price trends, location patterns, platform differences]
+
+## 🎯 **My Definitive Recommendations**
+[Give specific, actionable recommendations based on your analysis]
+
+Analyze these listings and provide:
+- Market summary with price trends and availability
+- Top 3 specific recommendations with reasoning
+- Neighborhood analysis comparing different areas
+- Definitive next steps for the user
+
+Be specific and give clear, definitive guidance.`
 }
 
 // 4. Call Gemini API
@@ -184,7 +210,7 @@ export async function POST(req: NextRequest) {
         const result = await callGemini(apiKey!, prompt)
         console.log('✅ Gemini analysis complete, length:', result.length)
 
-        return NextResponse.json({ result })
+        return NextResponse.json({ result, streaming: true })
     } catch (err: any) {
         console.error('❌ Error in AI Agent system:', err)
         return NextResponse.json({ result: err.message || 'Unknown error.' }, { status: 500 })
