@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import * as cheerio from 'cheerio'
+import { SearchAgent } from './agents/SearchAgent'
 
 // 1. Map city to Craigslist subdomain (expandable)
 const cityMap: Record<string, string> = {
@@ -68,8 +69,8 @@ async function scrapeCraigslist(city: string, query: string) {
     return listings
 }
 
-// 3. Generate a prompt for Gemini
-function generateGeminiPrompt(query: string, city: string, listings: { title: string, price: string, hood: string, link: string }[]) {
+// 3. Generate a prompt for Gemini with SearchAgent listings
+function generateGeminiPrompt(query: string, city: string, listings: any[]) {
     if (listings.length === 0) {
         return `You are a helpful AI housing assistant. A user is searching for "${query}" in ${city}. While I couldn't fetch live listings right now, please provide helpful advice about:
 
@@ -82,7 +83,23 @@ function generateGeminiPrompt(query: string, city: string, listings: { title: st
 Be specific and helpful. Format your response with markdown for good readability.`
     }
 
-    return `You are a helpful AI housing assistant. Here are some live listings for "${query}" in ${city} (from Craigslist):\n\n${listings.slice(0, 10).map(l => `- ${l.title} (${l.price}) ${l.hood} [View Listing](${l.link})`).join('\n')}\n\nSummarize the best options, give tips, and highlight anything notable. Do NOT make up listings.`
+    return `You are a helpful AI housing assistant. I found ${listings.length} listings across multiple platforms for "${query}" in ${city}:
+
+${listings.slice(0, 15).map(l => `**${l.title}** - ${l.price}
+📍 ${l.location} | 🏢 Platform: ${l.platform}
+${l.bedrooms} bed, ${l.bathrooms} bath | ${l.sqft}
+${l.description}
+[View Listing](${l.link})
+`).join('\n')}
+
+Based on these listings, provide:
+1. **Market Summary**: Price trends and availability
+2. **Top Recommendations**: Best 3-4 options and why
+3. **Neighborhood Analysis**: Compare different areas
+4. **Search Tips**: How to find more options like these
+5. **Next Steps**: Practical advice for contacting landlords
+
+Format your response with clear markdown sections.`
 }
 
 // 4. Call Gemini API
@@ -149,23 +166,27 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        console.log('Attempting to scrape listings for:', query, 'in', city)
-        // Step 1: Scrape listings
-        const listings = await scrapeCraigslist(city, query)
-        console.log('Found listings:', listings.length)
+        console.log('🚀 Initializing Search Agent for:', query, 'in', city)
 
-        // Step 2: Generate prompt
+        // Step 1: Initialize Search Agent
+        const searchAgent = new SearchAgent(apiKey!)
+
+        // Step 2: Execute intelligent multi-platform search
+        const listings = await searchAgent.executeSearch(query, city)
+        console.log(`🎯 Search Agent found ${listings.length} listings across multiple platforms`)
+
+        // Step 3: Generate enhanced prompt with agent results
         const prompt = generateGeminiPrompt(query, city, listings)
-        console.log('Generated prompt length:', prompt.length)
+        console.log('Generated enhanced prompt length:', prompt.length)
 
-        // Step 3: Call Gemini
-        console.log('Calling Gemini API...')
+        // Step 4: Call Gemini for analysis
+        console.log('🧠 Calling Gemini for market analysis...')
         const result = await callGemini(apiKey!, prompt)
-        console.log('Gemini response received, length:', result.length)
+        console.log('✅ Gemini analysis complete, length:', result.length)
 
         return NextResponse.json({ result })
     } catch (err: any) {
-        console.error('Error in API:', err)
+        console.error('❌ Error in AI Agent system:', err)
         return NextResponse.json({ result: err.message || 'Unknown error.' }, { status: 500 })
     }
 } 
