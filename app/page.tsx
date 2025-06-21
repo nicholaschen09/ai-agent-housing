@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowUp, Plus, Sparkles, ChevronDown, Search, Settings } from "lucide-react"
+import { ArrowUp, Plus, Sparkles, ChevronDown, Search, Settings, Menu, X, Edit } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect, useRef } from "react"
@@ -54,6 +54,7 @@ export default function Component() {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const [loadingDots, setLoadingDots] = useState("")
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const filteredCities = cityOptions.filter(city => city.toLowerCase().includes(citySearch.toLowerCase()))
 
@@ -240,251 +241,293 @@ export default function Component() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 py-16">
-      <div className="max-w-4xl w-full text-center space-y-12">
-        {/* Main Heading */}
-        <div className="space-y-4">
-          <h1 className="text-5xl md:text-6xl font-serif text-black leading-tight">The Search Engine for Finding Housing and Rentals in</h1>
-          <div className="flex items-center justify-center gap-2 relative">
-            <button
-              className="flex items-center gap-2 focus:outline-none transition-colors duration-150"
-              onClick={() => setDropdownOpen((open) => !open)}
-            >
-              <span className="text-5xl md:text-6xl font-serif text-black bg-[#fee2e2] rounded-2xl px-4 py-1">{selectedCity}</span>
-              <ChevronDown className="w-8 h-8 text-gray-600 mt-2 transition-transform duration-200" style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+    <div className="min-h-screen bg-white flex">
+      {/* Simple Sidebar */}
+      <div className={`fixed inset-y-0 left-0 z-50 w-16 bg-red-50 border-r border-red-100 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:inset-0`}>
+        <div className="flex flex-col h-full justify-between items-center py-4">
+          {/* Top icons */}
+          <div className="flex flex-col items-center space-y-6">
+            {/* Hamburger menu icon */}
+            <button className="p-2 text-red-400 hover:text-red-600">
+              <Menu className="w-6 h-6" />
             </button>
-            {dropdownOpen && (
-              <div
-                ref={dropdownRef}
-                className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-2xl shadow-2xl z-10 min-w-[340px] transition-all duration-200 animate-fade-in overflow-hidden"
-                style={{ boxShadow: '0 8px 32px rgba(80, 80, 120, 0.18)', borderRadius: '1.25rem' }}
-                onMouseLeave={() => setHoveredCity(null)}
-              >
-                <div className="sticky top-0 z-20 bg-white px-4 pt-4 pb-2">
-                  <div className="relative w-full">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                      <Search className="w-5 h-5" />
-                    </span>
-                    <input
-                      type="text"
-                      value={citySearch}
-                      onChange={e => setCitySearch(e.target.value)}
-                      placeholder="Search cities..."
-                      className="w-full rounded-full border border-gray-200 pl-10 pr-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-red-200"
-                    />
-                  </div>
-                </div>
-                <div className="max-h-60 overflow-y-auto rounded-b-2xl custom-scrollbar">
-                  {filteredCities.length === 0 && (
-                    <div className="px-8 py-6 text-gray-400 text-center">No cities found.</div>
-                  )}
-                  {filteredCities.map((city, idx) => {
-                    const isActive = selectedCity === city || hoveredCity === city;
-                    return (
-                      <div
-                        key={`${city}-${idx}`}
-                        className={`px-8 py-3 text-xl cursor-pointer transition-colors duration-150
-                          ${selectedCity === city ? 'bg-red-100 text-red-700 shadow-sm' : hoveredCity === city ? 'bg-red-50 text-red-700' : 'text-gray-900 hover:bg-red-50'}
-                          ${isActive ? '' : 'rounded-full'}
-                        `}
-                        onMouseEnter={() => setHoveredCity(city)}
-                        onMouseLeave={() => setHoveredCity(null)}
-                        onClick={() => {
-                          setSelectedCity(city)
-                          setDropdownOpen(false)
-                          setCitySearch("")
-                        }}
-                      >
-                        {city}
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
+
+            {/* Edit icon */}
+            <button className="p-2 text-red-400 hover:text-red-600">
+              <Edit className="w-6 h-6" />
+            </button>
           </div>
-        </div>
 
-        {/* Search Bar */}
-        <form className="relative max-w-3xl mx-auto" onSubmit={handleSearch} onDrop={handleDrop} onDragOver={handleDragOver}>
-          <div className={`relative bg-white rounded-3xl border-2 border-red-600 shadow-sm transition-all duration-200 ${imagePreview ? 'p-4 pb-4' : 'p-4'}`}>
-            {/* Image Preview inside search bar */}
-            {imagePreview && (
-              <div className="mb-3 flex items-start">
-                <div className="relative">
-                  <img src={imagePreview} alt="Uploaded preview" className="w-16 h-16 object-cover rounded-2xl shadow" />
-                  <button
-                    type="button"
-                    onClick={handleRemoveImage}
-                    className="absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow hover:bg-gray-100"
-                    aria-label="Remove image"
-                  >
-                    <span className="text-lg text-gray-700">×</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center gap-4">
-              <Button size="sm" variant="ghost" className="rounded-full w-8 h-8 p-0 hover:bg-red-100" type="button" onClick={handlePlusClick}>
-                <Plus className="w-4 h-4 text-gray-600" />
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-              </Button>
-
-              <Input
-                type="text"
-                value={searchInput}
-                onChange={e => setSearchInput(e.target.value)}
-                placeholder="Apartments for rent in Manhattan, pet-friendly..."
-                className="flex-1 text-lg border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400"
-                ref={searchInputRef}
-              />
-
-              <div className="flex items-center gap-2">
-                <Button size="sm" className="rounded-full w-10 h-10 p-0 bg-red-100 hover:bg-red-300 ml-2 transition-colors" type="submit">
-                  <ArrowUp className="w-4 h-4 rotate-45 text-red-700 group-hover:text-white transition-colors" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </form>
-
-        {/* Search Suggestions */}
-        {!results && !loading && !isThinking && (
-          <div className="space-y-3">
-            {/* First row - scrolling left */}
-            <div className="marquee-container">
-              <div className="marquee-content marquee-seamless">
-                {/* First set of suggestions */}
-                {searchSuggestions.map((suggestion, index) => (
-                  <Button
-                    key={`first-${index}`}
-                    variant="outline"
-                    className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm whitespace-nowrap flex-shrink-0"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                  >
-                    {suggestion}
-                  </Button>
-                ))}
-                {/* Duplicate set for seamless loop */}
-                {searchSuggestions.map((suggestion, index) => (
-                  <Button
-                    key={`second-${index}`}
-                    variant="outline"
-                    className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm whitespace-nowrap flex-shrink-0"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                  >
-                    {suggestion}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            {/* Second row - scrolling right */}
-            <div className="marquee-container">
-              <div className="marquee-content marquee-seamless-right">
-                {/* First set of suggestions (reversed order for variety) */}
-                {[...searchSuggestions].reverse().map((suggestion, index) => (
-                  <Button
-                    key={`right-first-${index}`}
-                    variant="outline"
-                    className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm whitespace-nowrap flex-shrink-0"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                  >
-                    {suggestion}
-                  </Button>
-                ))}
-                {/* Duplicate set for seamless loop */}
-                {[...searchSuggestions].reverse().map((suggestion, index) => (
-                  <Button
-                    key={`right-second-${index}`}
-                    variant="outline"
-                    className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm whitespace-nowrap flex-shrink-0"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                  >
-                    {suggestion}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-        <div className="max-w-3xl mx-auto mt-8 min-h-[80px] text-left">
-          {loading && (
-            <div className="bg-gray-50 rounded-xl p-6">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="w-5 h-5 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
-                </div>
-                <div className="text-lg text-gray-600">Deploying AI agent{loadingDots}</div>
-              </div>
-            </div>
-          )}
-          {isThinking && !loading && (
-            <div className="bg-gray-50 rounded-xl p-6">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="w-5 h-5 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
-                </div>
-                <div className="text-lg text-gray-600">Thinking...</div>
-              </div>
-              <div className="text-sm text-gray-500 mt-3 ml-8">Analyzing market data and formulating recommendations</div>
-            </div>
-          )}
-          {isStreaming && !loading && !isThinking && (
-            <div className="bg-red-50 rounded-xl p-6 text-gray-900 whitespace-pre-line">
-              <div className="mb-4 flex items-center justify-between">
-                <button
-                  onClick={handleToggleThinking}
-                  className="flex items-center gap-2 text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors group"
-                >
-                  <div className="flex items-center gap-1">
-                    <Sparkles className="w-4 h-4 text-red-500" />
-                    <span className="font-medium text-red-600">Show thinking</span>
-                  </div>
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 text-red-500 ${showFullAnalysis ? 'rotate-180' : ''}`} />
-                </button>
-                <div className="text-sm text-red-600 animate-pulse font-medium">Streaming analysis...</div>
-              </div>
-              <ReactMarkdown>{results}</ReactMarkdown>
-            </div>
-          )}
-          {results && !isStreaming && !loading && !isThinking && (
-            <div className="bg-gray-50 rounded-xl p-6 text-gray-900 whitespace-pre-line">
-              <div className="mb-4">
-                <button
-                  onClick={handleToggleThinking}
-                  className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors group"
-                >
-                  <div className="flex items-center gap-1">
-                    <Sparkles className="w-4 h-4 text-blue-500" />
-                    <span className="font-medium">Show thinking</span>
-                  </div>
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showFullAnalysis ? 'rotate-180' : ''}`} />
-                </button>
-              </div>
-              <ReactMarkdown>{results}</ReactMarkdown>
-              <div className="mt-4 text-xs text-gray-500">Results are generated by AI and are for informational purposes only. For live listings, use a trusted housing platform.</div>
-            </div>
-          )}
-          {imageFile && (
-            <div className="mt-2 text-xs text-gray-500">Image selected: {imageFile.name}</div>
-          )}
+          {/* Settings icon at bottom */}
+          <button className="p-2 text-red-400 hover:text-red-600">
+            <Settings className="w-6 h-6" />
+          </button>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 py-4 text-center bg-white/80 backdrop-blur-sm border-t border-gray-100">
-        <p className="text-sm text-gray-500 font-serif">
-          By <a href="https://twitter.com/nicholaschen__" target="_blank" rel="noopener noreferrer" className="text-red-600 hover:text-red-700 underline">@nicholaschen__</a> © 2025
-        </p>
-      </footer>
+      {/* Sidebar overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-16">
+        {/* Mobile menu button */}
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="fixed top-4 left-4 z-30 lg:hidden bg-red-100 text-red-600 p-2 rounded-lg shadow-lg border border-red-200"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        <div className="max-w-4xl w-full text-center space-y-12">
+          {/* Main Heading */}
+          <div className="space-y-4">
+            <h1 className="text-5xl md:text-6xl font-serif text-black leading-tight">The Search Engine for Finding Housing and Rentals in</h1>
+            <div className="flex items-center justify-center gap-2 relative">
+              <button
+                className="flex items-center gap-2 focus:outline-none transition-colors duration-150"
+                onClick={() => setDropdownOpen((open) => !open)}
+              >
+                <span className="text-5xl md:text-6xl font-serif text-black bg-[#fee2e2] rounded-2xl px-4 py-1">{selectedCity}</span>
+                <ChevronDown className="w-8 h-8 text-gray-600 mt-2 transition-transform duration-200" style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+              </button>
+              {dropdownOpen && (
+                <div
+                  ref={dropdownRef}
+                  className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-2xl shadow-2xl z-10 min-w-[340px] transition-all duration-200 animate-fade-in overflow-hidden"
+                  style={{ boxShadow: '0 8px 32px rgba(80, 80, 120, 0.18)', borderRadius: '1.25rem' }}
+                  onMouseLeave={() => setHoveredCity(null)}
+                >
+                  <div className="sticky top-0 z-20 bg-white px-4 pt-4 pb-2">
+                    <div className="relative w-full">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <Search className="w-5 h-5" />
+                      </span>
+                      <input
+                        type="text"
+                        value={citySearch}
+                        onChange={e => setCitySearch(e.target.value)}
+                        placeholder="Search cities..."
+                        className="w-full rounded-full border border-gray-200 pl-10 pr-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-red-200"
+                      />
+                    </div>
+                  </div>
+                  <div className="max-h-60 overflow-y-auto rounded-b-2xl custom-scrollbar">
+                    {filteredCities.length === 0 && (
+                      <div className="px-8 py-6 text-gray-400 text-center">No cities found.</div>
+                    )}
+                    {filteredCities.map((city, idx) => {
+                      const isActive = selectedCity === city || hoveredCity === city;
+                      return (
+                        <div
+                          key={`${city}-${idx}`}
+                          className={`px-8 py-3 text-xl cursor-pointer transition-colors duration-150
+                            ${selectedCity === city ? 'bg-red-100 text-red-700 shadow-sm' : hoveredCity === city ? 'bg-red-50 text-red-700' : 'text-gray-900 hover:bg-red-50'}
+                            ${isActive ? '' : 'rounded-full'}
+                          `}
+                          onMouseEnter={() => setHoveredCity(city)}
+                          onMouseLeave={() => setHoveredCity(null)}
+                          onClick={() => {
+                            setSelectedCity(city)
+                            setDropdownOpen(false)
+                            setCitySearch("")
+                          }}
+                        >
+                          {city}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          <form className="relative max-w-3xl mx-auto" onSubmit={handleSearch} onDrop={handleDrop} onDragOver={handleDragOver}>
+            <div className={`relative bg-white rounded-3xl border-2 border-red-600 shadow-sm transition-all duration-200 ${imagePreview ? 'p-4 pb-4' : 'p-4'}`}>
+              {/* Image Preview inside search bar */}
+              {imagePreview && (
+                <div className="mb-3 flex items-start">
+                  <div className="relative">
+                    <img src={imagePreview} alt="Uploaded preview" className="w-16 h-16 object-cover rounded-2xl shadow" />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow hover:bg-gray-100"
+                      aria-label="Remove image"
+                    >
+                      <span className="text-lg text-gray-700">×</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center gap-4">
+                <Button size="sm" variant="ghost" className="rounded-full w-8 h-8 p-0 hover:bg-red-100" type="button" onClick={handlePlusClick}>
+                  <Plus className="w-4 h-4 text-gray-600" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </Button>
+
+                <Input
+                  type="text"
+                  value={searchInput}
+                  onChange={e => setSearchInput(e.target.value)}
+                  placeholder="Apartments for rent in Manhattan, pet-friendly..."
+                  className="flex-1 text-lg border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400"
+                  ref={searchInputRef}
+                />
+
+                <div className="flex items-center gap-2">
+                  <Button size="sm" className="rounded-full w-10 h-10 p-0 bg-red-100 hover:bg-red-300 ml-2 transition-colors" type="submit">
+                    <ArrowUp className="w-4 h-4 rotate-45 text-red-700 group-hover:text-white transition-colors" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          {/* Search Suggestions */}
+          {!results && !loading && !isThinking && (
+            <div className="space-y-3">
+              {/* First row - scrolling left */}
+              <div className="marquee-container">
+                <div className="marquee-content marquee-seamless">
+                  {/* First set of suggestions */}
+                  {searchSuggestions.map((suggestion, index) => (
+                    <Button
+                      key={`first-${index}`}
+                      variant="outline"
+                      className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm whitespace-nowrap flex-shrink-0"
+                      onClick={() => handleSuggestionClick(suggestion)}
+                    >
+                      {suggestion}
+                    </Button>
+                  ))}
+                  {/* Duplicate set for seamless loop */}
+                  {searchSuggestions.map((suggestion, index) => (
+                    <Button
+                      key={`second-${index}`}
+                      variant="outline"
+                      className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm whitespace-nowrap flex-shrink-0"
+                      onClick={() => handleSuggestionClick(suggestion)}
+                    >
+                      {suggestion}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Second row - scrolling right */}
+              <div className="marquee-container">
+                <div className="marquee-content marquee-seamless-right">
+                  {/* First set of suggestions (reversed order for variety) */}
+                  {[...searchSuggestions].reverse().map((suggestion, index) => (
+                    <Button
+                      key={`right-first-${index}`}
+                      variant="outline"
+                      className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm whitespace-nowrap flex-shrink-0"
+                      onClick={() => handleSuggestionClick(suggestion)}
+                    >
+                      {suggestion}
+                    </Button>
+                  ))}
+                  {/* Duplicate set for seamless loop */}
+                  {[...searchSuggestions].reverse().map((suggestion, index) => (
+                    <Button
+                      key={`right-second-${index}`}
+                      variant="outline"
+                      className="suggestion-btn rounded-full bg-gray-50 text-gray-700 border-gray-200 px-4 py-2 h-auto text-sm whitespace-nowrap flex-shrink-0"
+                      onClick={() => handleSuggestionClick(suggestion)}
+                    >
+                      {suggestion}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="max-w-3xl mx-auto mt-8 min-h-[80px] text-left">
+            {loading && (
+              <div className="bg-gray-50 rounded-xl p-6">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="w-5 h-5 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                  </div>
+                  <div className="text-lg text-gray-600">Deploying AI agent{loadingDots}</div>
+                </div>
+              </div>
+            )}
+            {isThinking && !loading && (
+              <div className="bg-gray-50 rounded-xl p-6">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="w-5 h-5 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                  </div>
+                  <div className="text-lg text-gray-600">Thinking...</div>
+                </div>
+                <div className="text-sm text-gray-500 mt-3 ml-8">Analyzing market data and formulating recommendations</div>
+              </div>
+            )}
+            {isStreaming && !loading && !isThinking && (
+              <div className="bg-red-50 rounded-xl p-6 text-gray-900 whitespace-pre-line">
+                <div className="mb-4 flex items-center justify-between">
+                  <button
+                    onClick={handleToggleThinking}
+                    className="flex items-center gap-2 text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors group"
+                  >
+                    <div className="flex items-center gap-1">
+                      <Sparkles className="w-4 h-4 text-red-500" />
+                      <span className="font-medium text-red-600">Show thinking</span>
+                    </div>
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 text-red-500 ${showFullAnalysis ? 'rotate-180' : ''}`} />
+                  </button>
+                  <div className="text-sm text-red-600 animate-pulse font-medium">Streaming analysis...</div>
+                </div>
+                <ReactMarkdown>{results}</ReactMarkdown>
+              </div>
+            )}
+            {results && !isStreaming && !loading && !isThinking && (
+              <div className="bg-gray-50 rounded-xl p-6 text-gray-900 whitespace-pre-line">
+                <div className="mb-4">
+                  <button
+                    onClick={handleToggleThinking}
+                    className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors group"
+                  >
+                    <div className="flex items-center gap-1">
+                      <Sparkles className="w-4 h-4 text-blue-500" />
+                      <span className="font-medium">Show thinking</span>
+                    </div>
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showFullAnalysis ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
+                <ReactMarkdown>{results}</ReactMarkdown>
+                <div className="mt-4 text-xs text-gray-500">Results are generated by AI and are for informational purposes only. For live listings, use a trusted housing platform.</div>
+              </div>
+            )}
+            {imageFile && (
+              <div className="mt-2 text-xs text-gray-500">Image selected: {imageFile.name}</div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <footer className="fixed bottom-0 left-0 right-0 py-4 text-center bg-white/80 backdrop-blur-sm border-t border-gray-100">
+          <p className="text-sm text-gray-500 font-serif">
+            By <a href="https://twitter.com/nicholaschen__" target="_blank" rel="noopener noreferrer" className="text-red-600 hover:text-red-700 underline">@nicholaschen__</a> © 2025
+          </p>
+        </footer>
+      </div>
     </div>
   )
 }
