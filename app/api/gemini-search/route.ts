@@ -70,20 +70,49 @@ async function scrapeCraigslist(city: string, query: string) {
 
 // 3. Generate a prompt for Gemini
 function generateGeminiPrompt(query: string, city: string, listings: { title: string, price: string, hood: string, link: string }[]) {
+    if (listings.length === 0) {
+        return `You are a helpful AI housing assistant. A user is searching for "${query}" in ${city}. While I couldn't fetch live listings right now, please provide helpful advice about:
+
+1. Typical price ranges for this type of housing in ${city}
+2. Best neighborhoods to look in
+3. Tips for finding "${query}" 
+4. What to expect in terms of amenities and features
+5. Practical advice for the housing search process
+
+Be specific and helpful. Format your response with markdown for good readability.`
+    }
+
     return `You are a helpful AI housing assistant. Here are some live listings for "${query}" in ${city} (from Craigslist):\n\n${listings.slice(0, 10).map(l => `- ${l.title} (${l.price}) ${l.hood} [View Listing](${l.link})`).join('\n')}\n\nSummarize the best options, give tips, and highlight anything notable. Do NOT make up listings.`
 }
 
 // 4. Call Gemini API
 async function callGemini(apiKey: string, prompt: string) {
     try {
-        const geminiRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + apiKey, {
+        console.log('Calling Gemini with prompt preview:', prompt.substring(0, 100) + '...')
+
+        const geminiRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + apiKey, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         })
+
+        console.log('Gemini response status:', geminiRes.status)
+
+        if (!geminiRes.ok) {
+            const errorText = await geminiRes.text()
+            console.error('Gemini API error:', errorText)
+            throw new Error(`Gemini API error: ${geminiRes.status}`)
+        }
+
         const geminiData = await geminiRes.json()
-        return geminiData.candidates?.[0]?.content?.parts?.[0]?.text || 'No results found.'
+        console.log('Gemini response data:', JSON.stringify(geminiData, null, 2))
+
+        const result = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || 'No results found.'
+        console.log('Final result from Gemini:', result.substring(0, 100) + '...')
+
+        return result
     } catch (err) {
+        console.error('Error in callGemini:', err)
         throw new Error('Error contacting Gemini API.')
     }
 }
@@ -93,15 +122,50 @@ export async function POST(req: NextRequest) {
     const { query, city } = await req.json()
     const apiKey = process.env.GEMINI_API_KEY
 
+    console.log('API Key present:', !!apiKey, 'Key preview:', apiKey?.substring(0, 10) + '...')
+
+    // If no API key, provide a helpful mock response
+    if (!apiKey || apiKey === 'your_api_key_here') {
+        console.log('Using mock response - no valid API key')
+        const mockResult = `**Housing Search Results for "${query}" in ${city}**
+
+🏠 **Available Options:**
+- **1BR Studio Apartment** - $1,800/month - Downtown area, close to transit
+- **2BR Modern Apartment** - $2,400/month - Recently renovated, in-unit laundry
+- **Studio Loft** - $1,600/month - Exposed brick, great natural light
+- **1BR Garden Apartment** - $1,950/month - Ground floor, small patio
+
+💡 **Tips for your search:**
+- Consider looking at different neighborhoods for better value
+- Many listings update daily, so check back frequently
+- Look for "no-fee" apartments to save on broker costs
+- Consider transit proximity for daily commuting
+
+🎯 **Best Match:** The 1BR Studio appears to offer good value in a central location.
+
+*Note: To get real live listings, please configure your Gemini API key in the .env.local file.*`
+
+        return NextResponse.json({ result: mockResult })
+    }
+
     try {
+        console.log('Attempting to scrape listings for:', query, 'in', city)
         // Step 1: Scrape listings
         const listings = await scrapeCraigslist(city, query)
+        console.log('Found listings:', listings.length)
+
         // Step 2: Generate prompt
         const prompt = generateGeminiPrompt(query, city, listings)
+        console.log('Generated prompt length:', prompt.length)
+
         // Step 3: Call Gemini
+        console.log('Calling Gemini API...')
         const result = await callGemini(apiKey!, prompt)
+        console.log('Gemini response received, length:', result.length)
+
         return NextResponse.json({ result })
     } catch (err: any) {
+        console.error('Error in API:', err)
         return NextResponse.json({ result: err.message || 'Unknown error.' }, { status: 500 })
     }
 } 
