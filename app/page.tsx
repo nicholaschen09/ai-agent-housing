@@ -438,17 +438,17 @@ export default function Component() {
             </div>
           )}
           {isStreaming && !loading && !isThinking && (
-            <div className="bg-red-100 rounded-xl p-6 text-gray-900 whitespace-pre-line border border-red-200">
+            <div className="bg-red-50 rounded-xl p-6 text-gray-900 whitespace-pre-line">
               <div className="mb-4 flex items-center justify-between">
                 <button
                   onClick={handleToggleThinking}
-                  className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors group"
+                  className="flex items-center gap-2 text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors group"
                 >
                   <div className="flex items-center gap-1">
-                    <Sparkles className="w-4 h-4 text-blue-500" />
-                    <span className="font-medium">Show thinking</span>
+                    <Sparkles className="w-4 h-4 text-red-500" />
+                    <span className="font-medium text-red-600">Show thinking</span>
                   </div>
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showFullAnalysis ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 text-red-500 ${showFullAnalysis ? 'rotate-180' : ''}`} />
                 </button>
                 <div className="text-sm text-red-600 animate-pulse font-medium">Streaming analysis...</div>
               </div>
