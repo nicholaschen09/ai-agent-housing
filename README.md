@@ -4,7 +4,7 @@ A modern web app using ai agents for searching housing and rentals in major citi
 
 ## Features
 - Search for apartments and rentals with smart suggestions
-- City selection dropdown (New York City, San Francisco, Toronto, Vancouver)
+- City selection dropdown (New York City, San Francisco, Toronto, Vancouver, etc...)
 - Responsive, clean UI
 
 ## Setup
