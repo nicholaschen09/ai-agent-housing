@@ -356,7 +356,7 @@ export default function Component() {
         </form>
 
         {/* Search Suggestions */}
-        {!results && !loading && (
+        {!results && !loading && !isThinking && (
           <div className="space-y-3">
             {/* First row - scrolling left */}
             <div className="marquee-container">
