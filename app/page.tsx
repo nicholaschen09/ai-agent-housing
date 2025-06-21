@@ -279,7 +279,7 @@ export default function Component() {
     <div className="min-h-screen bg-white flex">
       {/* Simple Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 ${sidebarHovered ? 'w-64' : 'w-16'} bg-rose-25 border-r border-rose-50 transform transition-all duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:inset-0`}
+        className={`fixed inset-y-0 left-0 z-50 ${sidebarHovered ? 'w-64' : 'w-16'} bg-red-50 border-r border-red-100 transform transition-all duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:inset-0`}
         onMouseEnter={() => setSidebarHovered(true)}
         onMouseLeave={() => setSidebarHovered(false)}
       >
@@ -294,13 +294,13 @@ export default function Component() {
           {/* Top icons */}
           <div className="flex flex-col space-y-2">
             {/* New chat */}
-            <button className="flex items-center gap-3 px-4 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-colors">
+            <button className="flex items-center justify-center gap-3 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-colors">
               <Edit className="w-6 h-6 flex-shrink-0" />
               {sidebarHovered && <span className="text-gray-700 whitespace-nowrap">New chat</span>}
             </button>
 
             {/* Explore Gems */}
-            <button className="flex items-center gap-3 px-4 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-colors">
+            <button className="flex items-center justify-center gap-3 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-colors">
               <Heart className="w-6 h-6 flex-shrink-0" />
               {sidebarHovered && <span className="text-gray-700 whitespace-nowrap">Explore Gems</span>}
             </button>
@@ -335,7 +335,7 @@ export default function Component() {
           </div>
 
           {/* Settings at bottom */}
-          <button className="flex items-center gap-3 px-4 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-colors">
+          <button className="flex items-center justify-center gap-3 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-colors">
             <Settings className="w-6 h-6 flex-shrink-0" />
             {sidebarHovered && <span className="text-gray-700 whitespace-nowrap">Settings & help</span>}
           </button>
