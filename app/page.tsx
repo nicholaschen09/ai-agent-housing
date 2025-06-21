@@ -283,10 +283,10 @@ export default function Component() {
         onMouseEnter={() => setSidebarHovered(true)}
         onMouseLeave={() => setSidebarHovered(false)}
       >
-        <div className="flex flex-col h-full justify-between py-4">
+        <div className="flex flex-col h-full justify-between pt-1 pb-2">
           {/* Search icon in top right when expanded */}
           {sidebarHovered && (
-            <div className="flex justify-end px-4 mb-4">
+            <div className="flex justify-end px-4 mb-1">
               <Search className="w-6 h-6 text-red-300" />
             </div>
           )}
@@ -294,38 +294,38 @@ export default function Component() {
           {/* Top icons */}
           <div className="flex flex-col space-y-2">
             {/* New chat */}
-            <button className="flex items-center justify-center gap-3 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-colors">
+            <button className={`flex items-center gap-3 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-all duration-200 ${sidebarHovered ? 'justify-start px-3' : 'justify-center'}`}>
               <Edit className="w-6 h-6 flex-shrink-0" />
               {sidebarHovered && <span className="text-gray-700 whitespace-nowrap">New chat</span>}
             </button>
 
             {/* Explore Gems */}
-            <button className="flex items-center justify-center gap-3 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-colors">
+            <button className={`flex items-center gap-3 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-all duration-200 ${sidebarHovered ? 'justify-start px-3' : 'justify-center'}`}>
               <Heart className="w-6 h-6 flex-shrink-0" />
               {sidebarHovered && <span className="text-gray-700 whitespace-nowrap">Explore Gems</span>}
             </button>
 
             {/* Recent section */}
             {sidebarHovered && (
-              <div className="px-4 mt-6">
+              <div className="px-4 mt-6 animate-in fade-in duration-200">
                 <h3 className="text-sm font-medium text-gray-500 mb-3">Recent</h3>
                 <div className="space-y-1">
-                  <div className="py-2 px-2 text-sm text-gray-600 hover:bg-red-100 rounded-lg cursor-pointer">
+                  <div className="py-2 px-2 text-sm text-gray-600 hover:bg-red-50 hover:text-gray-700 rounded-lg cursor-pointer transition-colors duration-150">
                     Tic-Tac-Toe Game Creation
                   </div>
-                  <div className="py-2 px-2 text-sm text-white bg-blue-600 rounded-lg cursor-pointer">
+                  <div className="py-2 px-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg cursor-pointer transition-colors duration-150">
                     SYDE 162 Assignment Help
                   </div>
-                  <div className="py-2 px-2 text-sm text-gray-600 hover:bg-red-100 rounded-lg cursor-pointer">
+                  <div className="py-2 px-2 text-sm text-gray-600 hover:bg-red-50 hover:text-gray-700 rounded-lg cursor-pointer transition-colors duration-150">
                     Image Ideas: Difficulty and ...
                   </div>
-                  <div className="py-2 px-2 text-sm text-gray-600 hover:bg-red-100 rounded-lg cursor-pointer">
+                  <div className="py-2 px-2 text-sm text-gray-600 hover:bg-red-50 hover:text-gray-700 rounded-lg cursor-pointer transition-colors duration-150">
                     Pinstriped Pants' Origin Unk...
                   </div>
-                  <div className="py-2 px-2 text-sm text-gray-600 hover:bg-red-100 rounded-lg cursor-pointer">
+                  <div className="py-2 px-2 text-sm text-gray-600 hover:bg-red-50 hover:text-gray-700 rounded-lg cursor-pointer transition-colors duration-150">
                     Swiss Cheese Model Explain...
                   </div>
-                  <button className="py-2 px-2 text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
+                  <button className="py-2 px-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg flex items-center gap-1 transition-colors duration-150">
                     Show more
                     <ChevronDown className="w-4 h-4" />
                   </button>
@@ -335,7 +335,7 @@ export default function Component() {
           </div>
 
           {/* Settings at bottom */}
-          <button className="flex items-center justify-center gap-3 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-colors">
+          <button className={`flex items-center gap-3 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-all duration-200 ${sidebarHovered ? 'justify-start px-3' : 'justify-center'}`}>
             <Settings className="w-6 h-6 flex-shrink-0" />
             {sidebarHovered && <span className="text-gray-700 whitespace-nowrap">Settings & help</span>}
           </button>
