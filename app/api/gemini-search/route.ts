@@ -81,10 +81,10 @@ function generateGeminiPrompt(query: string, city: string, listings: any[]) {
 
 Structure your response as:
 
-## 🤔 **Analysis Process**
+## **Analysis Process**
 [Show your thinking step by step - market conditions, price analysis, location factors]
 
-## 🎯 **My Definitive Recommendations**
+## **My Definitive Recommendations**
 [Give specific, actionable advice - exact neighborhoods, price ranges, next steps]
 
 Provide specific, helpful advice about:
@@ -100,7 +100,7 @@ Be specific and give definitive guidance.`
     return `You are an expert housing analyst. I found ${listings.length} listings across multiple platforms for "${query}" in ${city}:
 
 ${listings.slice(0, 15).map(l => `**${l.title}** - ${l.price}
-📍 ${l.location} | 🏢 Platform: ${l.platform}
+Location: ${l.location} | Platform: ${l.platform}
 ${l.bedrooms} bed, ${l.bathrooms} bath | ${l.sqft}
 ${l.description}
 [View Listing](${l.link})
@@ -113,10 +113,10 @@ ${l.description}
 
 Structure your response as:
 
-## 🤔 **Market Analysis Process**
+## **Market Analysis Process**
 [Analyze the data step by step - price trends, location patterns, platform differences]
 
-## 🎯 **My Definitive Recommendations**
+## **My Definitive Recommendations**
 [Give specific, actionable recommendations based on your analysis]
 
 Analyze these listings and provide:
