@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowUp, Plus, Sparkles, ChevronDown, Search, Settings, Menu, X, Edit, Heart } from "lucide-react"
+import { ArrowUp, Plus, Sparkles, ChevronDown, Search, Settings, Menu, X, Edit, Heart, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect, useRef } from "react"
@@ -56,6 +56,10 @@ export default function Component() {
   const [loadingDots, setLoadingDots] = useState("")
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarHovered, setSidebarHovered] = useState(false)
+  const [chatTitle, setChatTitle] = useState("Housing Search Assistant")
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [tempTitle, setTempTitle] = useState("")
+  const [isFavorited, setIsFavorited] = useState(false)
 
   const filteredCities = cityOptions.filter(city => city.toLowerCase().includes(citySearch.toLowerCase()))
 
@@ -241,11 +245,41 @@ export default function Component() {
     }
   }
 
+  // Functions for chat title editing
+  function handleTitleClick() {
+    setIsEditingTitle(true)
+    setTempTitle(chatTitle)
+  }
+
+  function handleTitleSave() {
+    if (tempTitle.trim()) {
+      setChatTitle(tempTitle.trim())
+    }
+    setIsEditingTitle(false)
+  }
+
+  function handleTitleCancel() {
+    setIsEditingTitle(false)
+    setTempTitle("")
+  }
+
+  function handleTitleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === 'Enter') {
+      handleTitleSave()
+    } else if (e.key === 'Escape') {
+      handleTitleCancel()
+    }
+  }
+
+  function handleToggleFavorite() {
+    setIsFavorited(!isFavorited)
+  }
+
   return (
     <div className="min-h-screen bg-white flex">
       {/* Simple Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 ${sidebarHovered ? 'w-64' : 'w-16'} bg-red-50 border-r border-red-100 transform transition-all duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:inset-0`}
+        className={`fixed inset-y-0 left-0 z-50 ${sidebarHovered ? 'w-64' : 'w-16'} bg-rose-25 border-r border-rose-50 transform transition-all duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:inset-0`}
         onMouseEnter={() => setSidebarHovered(true)}
         onMouseLeave={() => setSidebarHovered(false)}
       >
@@ -253,20 +287,20 @@ export default function Component() {
           {/* Search icon in top right when expanded */}
           {sidebarHovered && (
             <div className="flex justify-end px-4 mb-4">
-              <Search className="w-6 h-6 text-red-400" />
+              <Search className="w-6 h-6 text-red-300" />
             </div>
           )}
 
           {/* Top icons */}
           <div className="flex flex-col space-y-2">
             {/* New chat */}
-            <button className="flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-600 hover:bg-red-100 rounded-lg mx-2 transition-colors">
+            <button className="flex items-center gap-3 px-4 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-colors">
               <Edit className="w-6 h-6 flex-shrink-0" />
               {sidebarHovered && <span className="text-gray-700 whitespace-nowrap">New chat</span>}
             </button>
 
             {/* Explore Gems */}
-            <button className="flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-600 hover:bg-red-100 rounded-lg mx-2 transition-colors">
+            <button className="flex items-center gap-3 px-4 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-colors">
               <Heart className="w-6 h-6 flex-shrink-0" />
               {sidebarHovered && <span className="text-gray-700 whitespace-nowrap">Explore Gems</span>}
             </button>
@@ -301,7 +335,7 @@ export default function Component() {
           </div>
 
           {/* Settings at bottom */}
-          <button className="flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-600 hover:bg-red-100 rounded-lg mx-2 transition-colors">
+          <button className="flex items-center gap-3 px-4 py-3 text-red-300 hover:text-red-400 hover:bg-red-50 rounded-lg mx-2 transition-colors">
             <Settings className="w-6 h-6 flex-shrink-0" />
             {sidebarHovered && <span className="text-gray-700 whitespace-nowrap">Settings & help</span>}
           </button>
@@ -321,17 +355,51 @@ export default function Component() {
         {/* Chat title - top left */}
         {!sidebarHovered && (
           <div className="fixed top-4 left-20 z-30 lg:left-20">
-            <h2 className="text-lg font-medium text-gray-800 flex items-center gap-2">
-              <ChevronDown className="w-4 h-4" />
-              Housing Search Assistant
-            </h2>
+            {isEditingTitle ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={tempTitle}
+                  onChange={(e) => setTempTitle(e.target.value)}
+                  onBlur={handleTitleSave}
+                  onKeyDown={handleTitleKeyDown}
+                  className="text-lg font-serif text-gray-800 bg-white border border-gray-300 rounded px-2 py-1 outline-none focus:border-red-400 focus:ring-1 focus:ring-red-200"
+                  style={{ width: `${Math.max(tempTitle.length * 1.2, chatTitle.length * 1.2, 20)}ch`, minWidth: '300px' }}
+                  autoFocus
+                />
+                <button
+                  onClick={handleToggleFavorite}
+                  className={`p-1 transition-colors ${isFavorited ? 'text-red-400 hover:text-red-500' : 'text-gray-400 hover:text-red-400'}`}
+                  title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+                >
+                  <Heart className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <h2
+                  className="text-lg font-serif text-gray-800 cursor-pointer hover:text-gray-600 transition-colors"
+                  onDoubleClick={handleTitleClick}
+                  title="Double-click to rename"
+                >
+                  {chatTitle}
+                </h2>
+                <button
+                  onClick={handleToggleFavorite}
+                  className={`p-1 transition-colors ${isFavorited ? 'text-red-400 hover:text-red-500' : 'text-gray-400 hover:text-red-400'}`}
+                  title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+                >
+                  <Heart className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
+                </button>
+              </div>
+            )}
           </div>
         )}
 
         {/* Mobile menu button */}
         <button
           onClick={() => setSidebarOpen(true)}
-          className="fixed top-4 left-4 z-30 lg:hidden bg-red-100 text-red-600 p-2 rounded-lg shadow-lg border border-red-200"
+          className="fixed top-4 left-4 z-30 lg:hidden bg-red-50 text-red-400 p-2 rounded-lg shadow-lg border border-red-100"
         >
           <Menu className="w-5 h-5" />
         </button>
